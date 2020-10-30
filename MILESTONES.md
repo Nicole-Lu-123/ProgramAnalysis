@@ -15,10 +15,10 @@ Visualisation:
 
 There are two choices of presenting the final visualisation:
 - Graph1:
- - The graph of each day contains all the classes as circles and relationships(if exist) as edges. For different days, the graph can be differerent, since classes can be added or deleted when menber changed the program. The changed class will be marked as blue(for example), the rest with no change will be grey. User can choose the date to see which class is changed. If the user also choose some member, the contribute of this(these) memer(s) will be shown as a part of the class circle, like a tiny pie chart, also the contributes will be colored in different colors. 
+ -- The graph of each day contains all the classes as circles and relationships(if exist) as edges. For different days, the graph can be differerent, since classes can be added or deleted when menber changed the program. The changed class will be marked as blue(for example), the rest with no change will be grey. User can choose the date to see which class is changed. If the user also choose some member, the contribute of this(these) memer(s) will be shown as a part of the class circle, like a tiny pie chart, also the contributes will be colored in different colors. 
  
--Graph2:
- - The graph shown on a specific day or of a specific member is a set of circles. The number of circles is determined by the number of changed classes and the radius of the circle is determined by the number of lines changed in the class.(e.g. 5 lines makes the radius is 1, using absolute number for delete lines is pos, lines that changes is regard as added lines)
+- Graph2:
+ -- The graph shown on a specific day or of a specific member is a set of circles. The number of circles is determined by the number of changed classes and the radius of the circle is determined by the number of lines changed in the class.(e.g. 5 lines makes the radius is 1, using absolute number for delete lines is pos, lines that changes is regard as added lines)
  
 
 Follow-up tasks:
