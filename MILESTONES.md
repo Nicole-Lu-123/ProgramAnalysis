@@ -25,7 +25,7 @@ Follow-up tasks:
 - dicide which graph to use, and more details of the graph
 - discuss with TA
 
-#### TA advise:
+TA advise:
 - Plan1 is suitable since it shows the different classes that's been added or removed and it allows you to extend it by adding additional detail based on what your chosen analysis would be.
 - In order to make this idea work, you must somehow present how each code change affects the behaviour of the program (e.g. loops/functions, some property of program behaviour) or some form of analysis that analyzes what program property has changed due to the code change (e.g. coupling/dependency between class, etc..).
 
