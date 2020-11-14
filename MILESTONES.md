@@ -85,7 +85,7 @@ the target user was provided with an image visualization of commit 1 and he/she 
 - Feedback: 
 she was able to undertand the relationship between classes and how different components and attributes existed within a class. she found it very informative to have an overview of a commit. 
 
-Image: https://uploader.shimo.im/f/me8HPBBVJWa15mSN.jpg
+Image:https://drive.google.com/file/d/12kCwaq47zR0soiaKKk_Yk4m7XNO4Rk9f/view
 
 
 - Stage two:
