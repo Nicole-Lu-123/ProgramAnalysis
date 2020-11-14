@@ -56,3 +56,36 @@ TA advise:
   - Here is our new idea:
    - For analysis part: we planned to do static analysis (feature, method, dependency) and dynamic analysis (check for loop, function call, etc). And nodes in graph will represent the class, with functions name and feature inside nodes. The line between two nodes will indicate the dependency. If there is on dependency between two classes after changing the code or classes, the line would be disappear. Number of function calls and for loop would also besides the nodes. Then, we will use library like D3.js to draw the graph. (may be use java 3D to visualize as a 3D graph, but just an idea)
 
+
+
+
+## Milestone 3
+- Visualization idea:
+ - Planet - class, size of planet stands for the size of the class file
+ - trees on planet - fields
+ - animals on planet - methods
+- Spaceships between planets - represents dependency  (including inheritance between classes, function calls)
+- Satellite around the planet - a satellite represents a for loop, for-loop with higher iterations has higher speed
+
+
+
+- Our target users are project managers who want to have a visual overview of each commit and code changes to relationship intra and inter-classes. 
+
+
+In first user study, 
+
+
+- Stage one: 
+the target user was provided with an image visualization of commit 1 and he/she was asked to review all the components and provide feedback. 
+
+
+- Feedback: 
+图片: https://uploader.shimo.im/f/me8HPBBVJWa15mSN.jpg
+
+
+- Stage two:
+the target user was offered another image of commit 2 for comparision in this case to check for code changes between commit. 
+
+
+- Feedback: 
+图片: https://uploader.shimo.im/f/hjpXN6IXeAo6kEYx.jpg
