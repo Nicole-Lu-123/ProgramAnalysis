@@ -69,7 +69,10 @@ TA advise:
 
 
 
-- Our target users are project managers who want to have a visual overview of each commit and code changes to relationship intra and inter-classes. 
+- Our target users are project managers or stduents with very little programming background and who want to have a visual overview of each commit and code changes to relationship intra and inter-classes. 
+
+
+Experiment Student: Arts Student with litmited programming knowledge 
 
 
 In first user study, 
@@ -80,7 +83,9 @@ the target user was provided with an image visualization of commit 1 and he/she 
 
 
 - Feedback: 
-图片: https://uploader.shimo.im/f/me8HPBBVJWa15mSN.jpg
+she was able to undertand the relationship between classes and how different components and attributes existed within a class. she found it very informative to have an overview of a commit. 
+
+Image: https://uploader.shimo.im/f/me8HPBBVJWa15mSN.jpg
 
 
 - Stage two:
@@ -88,4 +93,5 @@ the target user was offered another image of commit 2 for comparision in this ca
 
 
 - Feedback: 
-图片: https://uploader.shimo.im/f/hjpXN6IXeAo6kEYx.jpg
+she was able to see the difference between commit 1 and commit 2 without any further clarifications. She was able to distinguish and identify differences in code chagnes within a class and relationship changes between classes. In addition, she was able to deliver with the use of terminolgy effectively. she found such visualization can enhance the understanding of each commit and she was able to grasp the idea of code changes much more faster. 
+Image: https://uploader.shimo.im/f/hjpXN6IXeAo6kEYx.jpg
