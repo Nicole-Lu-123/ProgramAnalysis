@@ -94,4 +94,4 @@ the target user was offered another image of commit 2 for comparision in this ca
 
 - Feedback: 
 she was able to see the difference between commit 1 and commit 2 without any further clarifications. She was able to distinguish and identify differences in code chagnes within a class and relationship changes between classes. In addition, she was able to deliver with the use of terminolgy effectively. she found such visualization can enhance the understanding of each commit and she was able to grasp the idea of code changes much more faster. 
-Image: https://uploader.shimo.im/f/hjpXN6IXeAo6kEYx.jpg
+Image:https://drive.google.com/file/d/15tIO-saKIveVJ4YKR3hiWLxMiGzSoBhs/view
