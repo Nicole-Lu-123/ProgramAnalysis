@@ -97,3 +97,23 @@ she was able to see the difference between commit 1 and commit 2 without any fur
 Image:https://drive.google.com/file/d/15tIO-saKIveVJ4YKR3hiWLxMiGzSoBhs/view
 
 After consideration, we will not make any changes to the original language design. 
+
+
+
+## Milestone 4
+- Status of implementation
+We always got refreshed ideas after the group meeting.  Realizing the analysis between two commits puts a lot of pressure on us since we just started our work.
+Here is some changes:
+For the analysis part, we would find out which method has for-loops in the function body. And finally shows the all the methods with different colors which represents if the number of the for-loops, for example, if there is no for-loop, the color of object representing as method is white, if there are 2 for-loops then the color is grey. 
+
+
+- Plans for final user study
+We planned to conduct our final user study to another 2 person after the implementation is done. They better have coding experience.
+
+
+- Planned timeline for the remaining days
+Nov 21st - Nov 23st: Parse the data, Static and Dynamic analysis (Nicole and Difei)
+Nov 22nd - Nov 25th: Visualization (Sunny and Tian)
+Nov 26th - Nov 27th: Final user study, Improve the implementation and Test
+Nov 28th: Preparation of the video, like writing script
+Nov 29th: Make the video
