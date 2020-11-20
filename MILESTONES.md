@@ -106,7 +106,7 @@ After consideration, we will not make any changes to the original language desig
 
 We always got refreshed ideas after the group meeting.  Realizing the analysis between two commits puts a lot of pressure on us since we just started our work.
 
-- Here is some changes:
+- Here are some extra changes:
 
 
 For the analysis part, we would find out which method has for-loops in the function body. And finally shows the all the methods with different colors which represents if the number of the for-loops, for example, if there is no for-loop, the color of object representing as method is white, if there are 2 for-loops then the color is grey. 
