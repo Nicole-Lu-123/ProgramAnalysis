@@ -4,16 +4,15 @@ import com.github.javaparser.JavaParser;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class CollectClass {
     private final String path;
-    public List<String> classlist;
+    private List<String> classlist;
+    public Map<String,String> pairs;
     public CollectClass(String path){
         this.classlist = new ArrayList<>();
+        this.pairs = new HashMap<>();
         this.path = path;
     }
     public List<String> getClasslist() throws IOException { //throw an exception(see scanstore)
@@ -29,6 +28,7 @@ public class CollectClass {
             String classname = dir.getName().substring(0,end);
 //            System.out.println(classname);
             classlist.add(classname);
+            pairs.put(classname,dir.getPath());
             return null;
         }
 
@@ -50,6 +50,7 @@ public class CollectClass {
                 String classname = f.getName().substring(0,end);
 //                System.out.println(classname);
                 classlist.add(classname);
+                pairs.put(classname,dir.getPath());
             }
         }
         return classlist;
