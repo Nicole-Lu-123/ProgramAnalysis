@@ -21,6 +21,12 @@ public class App
     public static void main(String[] args) throws Exception {
         File file = new File("/Users/tianyuxin/Downloads/project1/DSL-photoeditor/src/ast/Var.java");
         System.out.println("path = " + file.getPath());
+        File file1 = new File("C:/cpsc410_project1_team16-master/DSL-photoeditor/src");
+        CollectClass collectclass = new CollectClass(file1.getPath());
+        List<String> lostr = collectclass.getClasslist();
+        for (String s : lostr) {
+            System.out.println(s);
+        }
         String FILE_PATH = file.getPath();
         CompilationUnit cu = StaticJavaParser.parse(new FileInputStream(FILE_PATH));
 
