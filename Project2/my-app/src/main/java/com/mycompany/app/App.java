@@ -4,13 +4,13 @@ import Scanner.CollectClass;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,43 +32,45 @@ public class App
             String path0 = collectclass.pairs.get(s);
             String path = path0 + "/" + s + ".java";
             App app = new App();
-            List<String> methods = app.printMethods(path);
+            List<String> methods = app.getName(path);
             classinfo.put(s,methods);
         }
 
     }
-    public List<String> printMethods(String path) throws FileNotFoundException {
+    public List<String> getName(String path) throws FileNotFoundException {
         File file = new File(path);
-        System.out.println("path = " + file.getPath());
-        String FILE_PATH = file.getPath();
-        CompilationUnit cu = StaticJavaParser.parse(new FileInputStream(FILE_PATH));
+        System.out.println("path for class = " + file.getPath());
+//        String fPaths = file.getPath();
+        VoidVisitor<? extends Object> NameOfMethod = new App.printMethod();
+        CompilationUnit cu = StaticJavaParser.parse(new FileInputStream(file.getPath()));
 
-        VoidVisitor<?> methodNameVisitor = new App.MethodNamePrinter();
-        methodNameVisitor.visit(cu, null);
-
+        NameOfMethod.visit(cu, null);
+        VoidVisitor<List<String>> methodNameCollector = new App.SetOfName();
         List<String> methodNames = new ArrayList<>();
-        VoidVisitor<List<String>> methodNameCollector = new App.MethodNameCollector();
         methodNameCollector.visit(cu, methodNames);
 //        methodNames.forEach(n -> System.out.println("Method Name Collected: " + n));
         return methodNames;
     }
 
-    private static class MethodNamePrinter extends VoidVisitorAdapter<Void> {
+    private static class printMethod extends VoidVisitorAdapter<Void> {
 
         @Override
-        public void visit(MethodDeclaration md, Void arg) {
-            super.visit(md, arg);
-            System.out.println("Method Name Printed: " + md.getName());
+        public void visit(MethodDeclaration MethodDec, Void v) {
+            super.visit(MethodDec, v);
+            SimpleName sn = MethodDec.getName();
+            System.out.println("Method used in this class: " + sn);
         }
     }
 
-    private static class MethodNameCollector extends VoidVisitorAdapter<List<String>> {
+    private static class SetOfName extends VoidVisitorAdapter<List<String>> {
 
         @Override
-        public void visit(MethodDeclaration md, List<String> collector) {
-            super.visit(md, collector);
-            collector.add(md.getNameAsString());
+        public void visit(MethodDeclaration methodDec, List<String> collection_1) {
+            super.visit(methodDec, collection_1);
+            String str1 = methodDec.getNameAsString();
+            collection_1.add(str1);
         }
     }
 
 }
+
