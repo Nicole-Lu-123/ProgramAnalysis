@@ -41,11 +41,25 @@ public class App
         classimpleinfo = new HashMap<>();
         classdependinfo = new HashMap<>();
         File file1 = new File("C:/cpsc410_project1_team16-master/DSL-photoeditor/src");
+//        File file2 = new File("C:/cpsc410_project1_team16-master/DSL-photoeditor/src/ast/PhotoeditorEvaluator.java");
+//
+
+//
+
+//        CollectClass collectclass = new CollectClass(file2.getPath());
+//
+//        inheritedClass ic = new inheritedClass(file2.getPath());
+//
+//        CompilationUnit cu = StaticJavaParser.parse(new FileInputStream("C:/cpsc410_project1_team16-master/DSL-photoeditor/src/ast/PhotoeditorEvaluator.java"));
+//
+//        App app = new App();
+//        List<String> lostr = new ArrayList<>();
+//        lostr.add("PhotoeditorEvaluator");
+//        List<String> dependencies = app.clean(app.getDependency(cu),lostr);
+//        classdependinfo.put("PhotoeditorEvaluator",dependencies);
+
         CollectClass collectclass = new CollectClass(file1.getPath());
-
         inheritedClass ic = new inheritedClass(file1.getPath());
-
-
         List<String> lostr = collectclass.getClasslist();
         for (String s : lostr) {
             String path0 = collectclass.pairs.get(s);
@@ -58,7 +72,7 @@ public class App
             List<String> extendname = app.getExtendName(inherts,cu);
             List<String> implename = app.getInterfaceName(inherts,cu);
             List<String> methods = app.getName(path);
-            List<String> dependencies = app.clean(app.getDependency(cu),lostr);
+            List<String> dependencies = app.clean(app.getDependency(cu),lostr,s);
 
             classmethodinfo.put(s,methods);
             classextendinfo.put(s,extendname);
@@ -68,15 +82,15 @@ public class App
         }
 
     }
-    public List<String> clean(List<String> dirty, List<String> need){
-        List<String> res = new ArrayList<>();
+    public List<String> clean(List<String> dirty, List<String> need, String classname){
+        List<String> temp = new ArrayList<>();
         for (String d : dirty){
-            if (need.contains(d)){
-                res.add(d);
-                System.out.println(d);
-            }
+            if (!temp.contains(d) && need.contains(d) && !d.equals(classname)){
+                    temp.add(d);
+                    System.out.println(d);
+                }
         }
-        return res;
+        return temp;
     }
     public List<String> getExtendName(VoidVisitor<Void> inher, CompilationUnit cu){
         List<String> los1 = new ArrayList<>();
@@ -122,7 +136,7 @@ public class App
         for(Node n : node.getChildNodes()){
             // only go deep if node is block{} or expression or variable declaration
             if (n instanceof BlockStmt || n instanceof ExpressionStmt
-                    || n instanceof VariableDeclarationExpr || n instanceof VariableDeclarator) {
+                    || n instanceof VariableDeclarationExpr || n instanceof VariableDeclarator || n instanceof ClassOrInterfaceType) {
                 result.addAll(finddependency(n));
             }
         }
