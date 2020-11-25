@@ -13,10 +13,9 @@ public class inheritedClass extends VoidVisitorAdapter<Void> {
         this.path = path;
     }
 
-    public void visit(ClassOrInterfaceDeclaration cid , Void arg){
-        super.visit(cid,arg);
-        //I guess you just want to print the inherited class's name at the console
-        System.out.println(""+cid.getExtendedTypes());
+    public void visit(ClassOrInterfaceDeclaration inter , Void v){
+        super.visit(inter,v);
+        System.out.println(" "+inter.getExtendedTypes());
     }
 
 }
