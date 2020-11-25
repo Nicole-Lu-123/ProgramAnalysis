@@ -24,6 +24,9 @@ public class CollectName {
         return methodNames;
 
     }
+    public Integer count(List<String> number){
+        return number.size();
+    }
 }
 
 

@@ -13,15 +13,18 @@ import java.util.*;
 public class Main
 {
     public static Map<String, List<String>> classmethodinfo;
+    public static Map<String, Integer> classsizeinfo;
     public static Map<String, List<String>> classextendinfo;
     public static Map<String, List<String>> classimpleinfo;
     public static Map<String, List<String>> classdependinfo;
     public static void main(String[] args) throws Exception {
         classmethodinfo = new HashMap<>();
+        classsizeinfo = new HashMap<>();
         classextendinfo = new HashMap<>();
         classimpleinfo = new HashMap<>();
         classdependinfo = new HashMap<>();
         File file1 = new File("C:/cpsc410_project1_team16-master/DSL-photoeditor/src");
+// (test for dependency) don't delete it !!!!!!!!!
 //        File file2 = new File("C:/cpsc410_project1_team16-master/DSL-photoeditor/src/ast/PhotoeditorEvaluator.java");
 //        CollectClass collectclass = new CollectClass(file2.getPath());
 //        inheritedClass ic = new inheritedClass(file2.getPath());
@@ -45,8 +48,10 @@ public class Main
             List<String> implename = ic.getInterfaceName(ic,cu);
             List<String> methods = cn.getName(path);
             List<String> dependencies = dep.clean(dep.getDependency(cu),lostr,s);
+            System.out.println(cn.count(methods));
 
             classmethodinfo.put(s,methods);
+            classsizeinfo.put(s,cn.count(methods));
             classextendinfo.put(s,extendname);
             classimpleinfo.put(s,implename);
             classdependinfo.put(s,dependencies);
