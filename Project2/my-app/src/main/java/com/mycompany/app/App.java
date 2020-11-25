@@ -49,6 +49,19 @@ public class App
         List<String> methodNames = new ArrayList<>();
         methodNameCollector.visit(cu, methodNames);
 //        methodNames.forEach(n -> System.out.println("Method Name Collected: " + n));
+        
+        System.out.printf("%-28s %-12s %s%n", "Node_class", "Identifier", "Node");
+        System.out.printf("%-28s %-12s %s%n", "==========", "==========", "====");
+        cu.walk(astNode -> {
+            String iden = "";
+            if (astNode instanceof NodeWithIdentifier)
+                iden = ((NodeWithIdentifier<? extends Object>) astNode).getIdentifier();
+            System.out.printf("%-28s %-12s %s%n",
+                    astNode.getClass().getSimpleName(),
+                    iden,
+                    astNode.toString().replaceFirst("(?s)\\R.*", "..."));
+        });
+
         return methodNames;
     }
 
