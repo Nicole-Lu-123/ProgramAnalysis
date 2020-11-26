@@ -24,7 +24,6 @@ public class CollectName {
         CompilationUnit cu = StaticJavaParser.parse(new FileInputStream(file.getPath()));
 
 
-
         NameOfMethod.visit(cu, null);
         VoidVisitor<List<String>> methodNameCollector = new SetOfName();
 
@@ -35,7 +34,7 @@ public class CollectName {
 
     }
 
-//    public int process(Node node) {
+    //    public int process(Node node) {
 //        int complexity = 0;
 //        for (ForStmt forStmt : node.getChildNodesByType(ForStmt.class)) {
 //            // We found an "for", add one.
@@ -44,7 +43,9 @@ public class CollectName {
 //
 //        }
 //    }
-
+    public Integer count(List<String> number) {
+        return number.size();
+    }
 
 
 }
