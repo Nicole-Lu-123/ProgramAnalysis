@@ -34,7 +34,6 @@ public class Main
 //        lostr.add("PhotoeditorEvaluator");
 //        List<String> dependencies = app.clean(app.getDependency(cu),lostr);
 //        classdependinfo.put("PhotoeditorEvaluator",dependencies);
-        //////////
 
         CollectClass collectclass = new CollectClass(file1.getPath());
         CollectName cn = new CollectName();
