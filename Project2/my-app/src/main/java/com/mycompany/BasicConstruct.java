@@ -96,6 +96,7 @@ public class BasicConstruct extends JFrame{
         app.setMaterial(mat);
         Box box = new Box(x, y, z, app);
 
+
         // Create a TransformGroup and make it the parent of the box
         TransformGroup tg = new TransformGroup();
         Vector3f vector = new Vector3f(0.7f, 0.0f, .0f);
