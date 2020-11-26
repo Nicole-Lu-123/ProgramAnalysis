@@ -1,6 +1,7 @@
 package Compare;
 
 import Scanner.CollectClass;
+import com.mycompany.app.CombineInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +12,15 @@ import java.util.List;
 public class Compare {
     private String pathold;
     private String pathnew;
-    public Compare(String path1, String path2){
+    public Compare(String path1, String path2) throws IOException {
         File oldfile = new File(path1);
         File newfile = new File(path2);
         this.pathold = oldfile.getPath();
         this.pathnew = newfile.getPath();
+        CombineInfo cbi1 = new CombineInfo(oldfile.getPath());
+        cbi1.generate();
+        CombineInfo cbi2 = new CombineInfo(newfile.getPath());
+        cbi2.generate();
     }
     public List<List<String>> compareclass() throws IOException {
         CollectClass collectold = new CollectClass(pathold);
