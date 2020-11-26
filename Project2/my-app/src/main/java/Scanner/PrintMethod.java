@@ -1,7 +1,9 @@
 package Scanner;
 
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
@@ -15,8 +17,10 @@ public class PrintMethod extends VoidVisitorAdapter<Void> {
     public void visit(MethodDeclaration MethodDec, Void v) {
         super.visit(MethodDec, v);
         SimpleName sn = MethodDec.getName();
-        countNumMethod1++;
-        System.out.println("Method used in this class: " + sn);
+        NodeList<Parameter> parameters = MethodDec.getParameters();
+
+        //countNumMethod1++;
+        System.out.println("Method used in this class: " + sn + parameters);
 //         System.out.println("number of for method in this class: " + countNumMethod1);
 //         System.out.println("#loop: " + countStates);
 
@@ -33,3 +37,4 @@ public class PrintMethod extends VoidVisitorAdapter<Void> {
 
 
 }
+
