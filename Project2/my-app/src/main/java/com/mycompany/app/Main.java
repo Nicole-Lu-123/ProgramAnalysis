@@ -3,7 +3,6 @@ package com.mycompany.app;
 import Dependency.Dependency;
 import Scanner.CollectClass;
 import Scanner.CollectName;
-package com.mycompany.app;
 
 import Dependency.Dependency;
 import Scanner.CollectClass;
