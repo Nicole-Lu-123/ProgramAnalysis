@@ -23,8 +23,9 @@ public class CombineInfo {
     public  List<String> classinfo;;
     public String path;
 
-    public CombineInfo(String path){
+    public CombineInfo(String path) throws IOException {
         this.path = path;
+        generate();
     }
     public void generate() throws IOException {
         classmethodinfo = new HashMap<>();

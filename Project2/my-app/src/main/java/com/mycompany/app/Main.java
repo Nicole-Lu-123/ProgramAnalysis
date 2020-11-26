@@ -10,6 +10,8 @@ import Scanner.CollectClass;
 import Scanner.CollectName;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.mycompany.BasicSimpleUniverse;
+import com.sun.j3d.utils.applet.MainFrame;
 import inherited.inheritedClass;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,10 +23,13 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-//        File file1 = new File("C:\\cpsc410_project1_team16-master\\DSL-photoeditor\\src");
-//        File file2 = new File("/Users/tianyuxin/Downloads/tinyVarsProcSkeleton-3/src");
-//        CombineInfo cbi1 = new CombineInfo(file1.getPath());
-//        cbi1.generate();
+        //File file1 = new File("C:\\cpsc410_project1_team16-master\\DSL-photoeditor\\src");
+        //File file2 = new File("/Users/tianyuxin/Downloads/tinyVarsProcSkeleton-3/src");
+        File file1 = new File("C:\\Users\\liuce\\Desktop\\cpsc410_project1_team16-master\\DSL-photoeditor\\src");
+        CombineInfo cbi1 = new CombineInfo(file1.getPath());
+        // cbi1.generate(); // delete, add this to CombineInfo constructor
+
+        System.out.println("Done first commit analysis!!!");
 //        for(String s :cbi1.classdependinfo.get("PhotoeditorParser")){
 //            System.out.println(s);
 //        }
@@ -42,6 +47,9 @@ public class Main {
             System.out.println(s);
         }
 
+
+        // visualization
+        new MainFrame(new BasicSimpleUniverse(cbi1), 700, 700);
     }
 
 }
