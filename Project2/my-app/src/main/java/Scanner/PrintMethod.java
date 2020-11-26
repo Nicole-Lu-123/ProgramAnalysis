@@ -9,7 +9,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 public class PrintMethod extends VoidVisitorAdapter<Void> {
     public int countStates;
-    public int countNumMethod1;
+//     public int countNumMethod1;
 
     @Override
     public void visit(MethodDeclaration MethodDec, Void v) {
@@ -17,7 +17,7 @@ public class PrintMethod extends VoidVisitorAdapter<Void> {
         SimpleName sn = MethodDec.getName();
         countNumMethod1++;
         System.out.println("Method used in this class: " + sn);
-        System.out.println("number of for method in this class: " + countNumMethod1);
+//         System.out.println("number of for method in this class: " + countNumMethod1);
 //         System.out.println("#loop: " + countStates);
 
     }
