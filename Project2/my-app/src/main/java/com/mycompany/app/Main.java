@@ -29,13 +29,11 @@ public class Main {
 //            System.out.println(s);
 //        }
 //        CombineInfo cbi2 = new CombineInfo(file1.getPath());
-        String oldpath = "/Users/tianyuxin/Downloads/project1/DSL-photoeditor/src/ast";
-        String newpath = "/Users/tianyuxin/Downloads/project1/DSL-photoeditor/src/libs";
+        String oldpath = "C:\\cpsc410_project1_team16-master\\DSL-photoeditor\\src\\ast";
+        String newpath = "C:\\cpsc410_project1_team16-master\\DSL-photoeditor\\src\\libs";
         Compare compare = new Compare(oldpath,newpath);
-        Map<String, List<String>> addmethods = compare.methodAdd();
-        Map<String, List<String>> deletemethods = compare.methodDelet();
-        List<String> addclass = compare.compareclass().get(0);
-        List<String> deletclass = compare.compareclass().get(1);
+        List<String> addclass = compare.compareClass().get(0);
+        List<String> deletclass = compare.compareClass().get(1);
         for(String s :addclass){
             System.out.println(s);
         }
@@ -43,19 +41,6 @@ public class Main {
         for(String s :deletclass){
             System.out.println(s);
         }
-
-        for(String key : addmethods.keySet()){
-            List<String> listOfValue = addmethods.get(key);
-            System.out.println(listOfValue);
-        }
-
-        for(String key : deletemethods.keySet()){
-            List<String> listOfValue = deletemethods.get(key);
-            System.out.println(listOfValue);
-        }
-
-
-
 
     }
 

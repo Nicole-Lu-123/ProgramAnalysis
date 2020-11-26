@@ -19,6 +19,8 @@ public class CombineInfo {
     public  Map<String, List<String>> classextendinfo;
     public  Map<String, List<String>> classimpleinfo;
     public  Map<String, List<String>> classdependinfo;
+    public  Map<String, Integer> classsizeinfo;
+    public  List<String> classinfo;;
     public String path;
 
     public CombineInfo(String path){
@@ -35,6 +37,7 @@ public class CombineInfo {
         inheritedClass ic = new inheritedClass(file1.getPath());
         Dependency dep = new Dependency();
         List<String> lostr = collectclass.getClasslist();
+        classinfo = lostr;
         for (String s : lostr) {
             String path0 = collectclass.pairs.get(s);
             String path = path0 + "/" + s + ".java";
@@ -47,6 +50,7 @@ public class CombineInfo {
             classextendinfo.put(s, extendname);
             classimpleinfo.put(s, implename);
             classdependinfo.put(s, dependencies);
+            classsizeinfo.put(s,cn.count(methods));
         }
     }
 
