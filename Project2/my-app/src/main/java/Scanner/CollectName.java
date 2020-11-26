@@ -32,10 +32,6 @@ public class CollectName {
 
         List<String> methodNames = new ArrayList<>();
         methodNameCollector.visit(cu, methodNames);
-
-
-
-
         System.out.println("number of for loop in this class: " + process(cu));
 
 

@@ -18,7 +18,6 @@ public class PrintMethod extends VoidVisitorAdapter<Void> {
         super.visit(MethodDec, v);
         SimpleName sn = MethodDec.getName();
         NodeList<Parameter> parameters = MethodDec.getParameters();
-
         //countNumMethod1++;
         System.out.println("Method used in this class: " + sn + parameters);
 //         System.out.println("number of for method in this class: " + countNumMethod1);
