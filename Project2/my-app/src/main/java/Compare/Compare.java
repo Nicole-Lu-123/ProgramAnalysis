@@ -41,26 +41,26 @@ public class Compare {
     }
     public List<Map<String, List<String>>> compareMethod(){
         List<Map<String, List<String>>> changedmethods = new ArrayList<>();
-        changedmethods.add(methodAdd());
-        changedmethods.add(methodDelet());
+        changedmethods.add(cleaner(methodAdd()));
+        changedmethods.add(cleaner(methodDelet()));
         return changedmethods;
     }
     public List<Map<String, List<String>>> compareExtend(){
         List<Map<String, List<String>>> changedextend = new ArrayList<>();
-        changedextend.add(addextend());
-        changedextend.add(removeextend());
+        changedextend.add(cleaner(addextend()));
+        changedextend.add(cleaner(removeextend()));
         return changedextend;
     }
     public List<Map<String, List<String>>> compareInterface(){
         List<Map<String, List<String>>> changedinterface = new ArrayList<>();
-        changedinterface.add(addinterface());
-        changedinterface.add(removeinterface());
+        changedinterface.add(cleaner(addinterface()));
+        changedinterface.add(cleaner(removeinterface()));
         return changedinterface;
     }
     public List<Map<String, List<String>>> compareDep(){
         List<Map<String, List<String>>> changeddep = new ArrayList<>();
-        changeddep.add(adddep());
-        changeddep.add(removedep());
+        changeddep.add(cleaner(adddep()));
+        changeddep.add(cleaner(removedep()));
         return changeddep;
     }
 
@@ -74,6 +74,8 @@ public class Compare {
 
         return result;
     }
+
+
 
     public List<String> deleteclass(List<String> oldone, List<String> newone) {
         List<String> result = new ArrayList<>();
@@ -214,6 +216,15 @@ public class Compare {
             removedep.put(common,store);
         }
         return removedep;
+    }
+    public Map<String, List<String>> cleaner(Map<String, List<String>> dirty){
+        Map<String, List<String>> clean = new HashMap<>();
+        for (String s: dirty.keySet()){
+            if (dirty.get(s).size() != 0){
+                clean.put(s,dirty.get(s));
+            }
+        }
+        return clean;
     }
 
 }
