@@ -5,6 +5,9 @@ package com.mycompany;
 import javax.media.j3d.*;
 import javax.swing.JFrame;
 import java.awt.*;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import javax.swing.*;
 import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.universe.SimpleUniverse;
@@ -172,9 +175,8 @@ public class BasicConstruct extends JFrame{
 
         bc.setSize(1000, 1000);
         bc.addBox(0.6f, 0.2f, 0.2f, RED, RED);
-        bc.addSphere();
+        //bc.addSphere();
         bc.addDirectionalLight(new Vector3f(0f, 0f, -1), new Color3f(1f, 1f, 0f));
-
         bc.finalise();
 
         bc.setVisible(true);
