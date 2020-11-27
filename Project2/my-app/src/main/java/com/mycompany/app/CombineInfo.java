@@ -32,6 +32,7 @@ public class CombineInfo {
         classextendinfo = new HashMap<>();
         classimpleinfo = new HashMap<>();
         classdependinfo = new HashMap<>();
+        classsizeinfo = new HashMap<>();
         File file1 = new File(this.path);
         CollectClass collectclass = new CollectClass(file1.getPath());
         CollectName cn = new CollectName();
