@@ -37,8 +37,10 @@ public class Main {
         String oldpath = "C:\\Users\\卢晓萱\\Desktop\\cpsc410_project1_team16-master\\DSL-photoeditor\\src";
         String newpath = "C:\\Users\\卢晓萱\\Desktop\\cpsc410_project1_team16-9953fa8b1a4ac0d26668bd2a1a5fb09ec5a806a7\\DSL-photoeditor\\src";
         Compare compare = new Compare(oldpath,newpath);
-        Map<String, List<String>> add = compare.compareExtend().get(0);
-        Map<String, List<String>> delet = compare.compareExtend().get(1);
+        Map<String, List<String>> add = compare.compareMethod().get(0);
+        Map<String, List<String>> delet = compare.compareMethod().get(1);
+//        Map<String, List<String>> l1 = compare.cbi1MethodMap;
+//        Map<String, List<String>> l2 = compare.cbi2MethodMap;
 
         System.out.println("############################");
         for(String s :delet.keySet()){

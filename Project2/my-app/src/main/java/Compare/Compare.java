@@ -90,39 +90,39 @@ public class Compare {
     public Map<String, List<String>> methodAdd() {
         Map<String, List<String>> MwthodAlreadyAdd = new HashMap<>();
         List<String> result = new ArrayList<>();
-        //go through the same class between two commit
-        for (String str : SameClassBetweenTwoCommit) {
-            //get the method name in the second commit of same class
-            for (String str2Commit : cbi2MethodMap.get(str)) {
-                // if the method in first commit did not contain the method for second in same class
-                if (!cbi1MethodMap.get(str).contains(str2Commit)) {
-                    result.add(str2Commit);
+        for (String str : lostrnew) {
+            if (lostrold.contains(str)) {
+                for (String method : cbi2MethodMap.get(str)) {
+                    // if the method in first commit did not contain the method for second in same class
+                    if (!cbi1MethodMap.get(str).contains(method)) {
+                        result.add(method);
+                    }
                 }
+                MwthodAlreadyAdd.put(str, result);
             }
-            MwthodAlreadyAdd.put(str, result);
+            MwthodAlreadyAdd.put(str, cbi2MethodMap.get(str));
         }
         return MwthodAlreadyAdd;
-
     }
 
     public Map<String, List<String>> methodDelet() {
         Map<String, List<String>> MethodAlreadyDelete = new HashMap<>();
         List<String> result = new ArrayList<>();
-
         //go through the same class between two commit
-        for (String str : SameClassBetweenTwoCommit) {
+        for (String str : lostrold) {
             //get the method name in the first commit of same class
-            for (String str1Commit : cbi1MethodMap.get(str)) {
-                // if the method in second commit did not contain the method for first in same class
-                if (!cbi2MethodMap.get(str).contains(str1Commit)) {
-                    result.add(str1Commit);
+            if (lostrnew.contains(str)) {
+                for (String method : cbi1MethodMap.get(str)) {
+                    // if the method in second commit did not contain the method for first in same class
+                    if (!cbi2MethodMap.get(str).contains(method)) {
+                        result.add(method);
+                    }
+                    MethodAlreadyDelete.put(str, result);
                 }
-
             }
-            MethodAlreadyDelete.put(str, result);
+            MethodAlreadyDelete.put(str, cbi1MethodMap.get(str));
         }
         return MethodAlreadyDelete;
-
     }
 
     public Map<String, List<String>> addextend() {
