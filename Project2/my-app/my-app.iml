@@ -26,5 +26,16 @@
     <orderEntry type="library" name="Maven: com.google.errorprone:error_prone_annotations:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.j2objc:j2objc-annotations:1.1" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.mojo:animal-sniffer-annotations:1.17" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/j3dcore.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/vecmath.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/j3dutils.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
