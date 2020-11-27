@@ -41,26 +41,26 @@ public class Compare {
     }
     public List<Map<String, List<String>>> compareMethod(){
         List<Map<String, List<String>>> changedmethods = new ArrayList<>();
-        changedmethods.add(methodAdd());
-        changedmethods.add(methodDelet());
+        changedmethods.add(cleaner(methodAdd()));
+        changedmethods.add(cleaner(methodDelet()));
         return changedmethods;
     }
     public List<Map<String, List<String>>> compareExtend(){
         List<Map<String, List<String>>> changedextend = new ArrayList<>();
-        changedextend.add(addextend());
-        changedextend.add(removeextend());
+        changedextend.add(cleaner(addextend()));
+        changedextend.add(cleaner(removeextend()));
         return changedextend;
     }
     public List<Map<String, List<String>>> compareInterface(){
         List<Map<String, List<String>>> changedinterface = new ArrayList<>();
-        changedinterface.add(addinterface());
-        changedinterface.add(removeinterface());
+        changedinterface.add(cleaner(addinterface()));
+        changedinterface.add(cleaner(removeinterface()));
         return changedinterface;
     }
     public List<Map<String, List<String>>> compareDep(){
         List<Map<String, List<String>>> changeddep = new ArrayList<>();
-        changeddep.add(adddep());
-        changeddep.add(removedep());
+        changeddep.add(cleaner(adddep()));
+        changeddep.add(cleaner(removedep()));
         return changeddep;
     }
 
@@ -75,6 +75,8 @@ public class Compare {
         return result;
     }
 
+
+
     public List<String> deleteclass(List<String> oldone, List<String> newone) {
         List<String> result = new ArrayList<>();
         for (String n : oldone) {
@@ -88,39 +90,39 @@ public class Compare {
     public Map<String, List<String>> methodAdd() {
         Map<String, List<String>> MwthodAlreadyAdd = new HashMap<>();
         List<String> result = new ArrayList<>();
-        //go through the same class between two commit
-        for (String str : SameClassBetweenTwoCommit) {
-            //get the method name in the second commit of same class
-            for (String str2Commit : cbi2MethodMap.get(str)) {
-                // if the method in first commit did not contain the method for second in same class
-                if (!cbi1MethodMap.get(str).contains(str2Commit)) {
-                    result.add(str2Commit);
+        for (String str : lostrnew) {
+            if (lostrold.contains(str)) {
+                for (String method : cbi2MethodMap.get(str)) {
+                    // if the method in first commit did not contain the method for second in same class
+                    if (!cbi1MethodMap.get(str).contains(method)) {
+                        result.add(method);
+                    }
                 }
+                MwthodAlreadyAdd.put(str, result);
             }
-            MwthodAlreadyAdd.put(str, result);
+            MwthodAlreadyAdd.put(str, cbi2MethodMap.get(str));
         }
         return MwthodAlreadyAdd;
-
     }
 
     public Map<String, List<String>> methodDelet() {
         Map<String, List<String>> MethodAlreadyDelete = new HashMap<>();
         List<String> result = new ArrayList<>();
-
         //go through the same class between two commit
-        for (String str : SameClassBetweenTwoCommit) {
+        for (String str : lostrold) {
             //get the method name in the first commit of same class
-            for (String str1Commit : cbi1MethodMap.get(str)) {
-                // if the method in second commit did not contain the method for first in same class
-                if (!cbi2MethodMap.get(str).contains(str1Commit)) {
-                    result.add(str1Commit);
+            if (lostrnew.contains(str)) {
+                for (String method : cbi1MethodMap.get(str)) {
+                    // if the method in second commit did not contain the method for first in same class
+                    if (!cbi2MethodMap.get(str).contains(method)) {
+                        result.add(method);
+                    }
+                    MethodAlreadyDelete.put(str, result);
                 }
-
             }
-            MethodAlreadyDelete.put(str, result);
+            MethodAlreadyDelete.put(str, cbi1MethodMap.get(str));
         }
         return MethodAlreadyDelete;
-
     }
 
     public Map<String, List<String>> addextend() {
@@ -214,6 +216,15 @@ public class Compare {
             removedep.put(common,store);
         }
         return removedep;
+    }
+    public Map<String, List<String>> cleaner(Map<String, List<String>> dirty){
+        Map<String, List<String>> clean = new HashMap<>();
+        for (String s: dirty.keySet()){
+            if (dirty.get(s).size() != 0){
+                clean.put(s,dirty.get(s));
+            }
+        }
+        return clean;
     }
 
 }
