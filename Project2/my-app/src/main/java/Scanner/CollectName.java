@@ -40,19 +40,18 @@ public class CollectName {
     }
 
 
-    static int process(Node node) {
+    public static boolean process(Node node) {
         int complexity = 0;
         for (ForStmt forStmt : node.getChildNodesByType(ForStmt.class)) {
             // We found an for
-            complexity++;
                 if (forStmt.isForStmt()) {
-                    complexity++;
+                    return true;
                 }
 
-        }
-        return complexity;
-    }
 
+        }
+        return false;
+    }
 
 
     public Integer count(List<String> number) {
