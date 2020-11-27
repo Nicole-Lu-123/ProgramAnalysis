@@ -1,28 +1,25 @@
 package com.mycompany;
-import java.applet.Applet;
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Random;
+import com.sun.j3d.utils.applet.MainFrame;
+import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
+import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
+import com.sun.j3d.utils.geometry.Box;
+import com.sun.j3d.utils.geometry.Sphere;
+import com.sun.j3d.utils.image.TextureLoader;
+import com.sun.j3d.utils.universe.SimpleUniverse;
 
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import java.applet.Applet;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Random;
 
-import com.sun.j3d.loaders.Scene;
-import com.sun.j3d.loaders.objectfile.ObjectFile;
-import com.sun.j3d.utils.applet.MainFrame;
-import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
-import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
-import com.sun.j3d.utils.behaviors.mouse.MouseWheelZoom;
-import com.sun.j3d.utils.behaviors.mouse.MouseZoom;
-import com.sun.j3d.utils.geometry.Box;
-import com.sun.j3d.utils.geometry.Sphere;
-import com.sun.j3d.utils.image.TextureLoader;
-import com.sun.j3d.utils.universe.SimpleUniverse;
-
-public class BasicSimpleUniverse extends Applet{
+public class BasicSimpleUniverse extends Applet implements ActionListener {
     public SimpleUniverse universe;
     public BranchGroup rootBranchGroup;
     public BoundingSphere bound;
@@ -47,7 +44,46 @@ public class BasicSimpleUniverse extends Applet{
         universe.getViewingPlatform().setNominalViewingTransform();
         universe.addBranchGraph(scene);
 
+        BranchGroup view = createViewGraph();
+        universe.addBranchGraph(view);
+
+
     }
+
+    public BranchGroup createViewGraph() {
+        Integer viewNumber = 2;
+        Canvas3D[] canvas3D = new Canvas3D[viewNumber];
+        String viewOption[] = {"Front View", "Side View", "Plan View", "Zoom Out View"};
+        TransformGroup viewPointPlatform;
+//        viewManager = new ViewManager(this, 1, 2);
+        BranchGroup view1 = new BranchGroup();
+        TransformGroup transformGroup = new TransformGroup();
+        view1.addChild(transformGroup);
+        GraphicsConfiguration configuration = SimpleUniverse.getPreferredConfiguration();
+        for(int i = 0; i < viewNumber; i++) {
+            canvas3D[i] = new Canvas3D(configuration);
+            viewPointPlatform = createViewPointPlatform(canvas3D[i], i);
+            transformGroup.addChild(viewPointPlatform);
+        }
+        return view1;
+
+    }
+
+    private TransformGroup createViewPointPlatform(Canvas3D canvas3D, int i) {
+        Transform3D transform3D = new vpTransform3D().vpTransform3D(i);
+        ViewPlatform viewPlatform = new ViewPlatform();
+        TransformGroup transformGroup = new TransformGroup(transform3D);
+        transformGroup.addChild(viewPlatform);
+        View view = new View();
+        view.attachViewPlatform(viewPlatform);
+        view.addCanvas3D(canvas3D);
+        view.setPhysicalBody(new PhysicalBody());
+        view.setPhysicalEnvironment(new PhysicalEnvironment());
+        return transformGroup;
+    }
+    
+    
+    
 
     public BranchGroup createSceneGraph() {
         TransformGroup tg = new TransformGroup();
@@ -185,4 +221,31 @@ public class BasicSimpleUniverse extends Applet{
         rootBranchGroup.addChild(myMouseTranslate);
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+    }
+
+    private class vpTransform3D extends Transform3D {
+        public Transform3D vpTransform3D(int i) {
+            Transform3D transform3D = new Transform3D();
+
+//            switch (i) {
+//                case FRONT_VIEW: break;
+//                case SIDE_VIEW: transform3D.rotY(Math.PI/2.0d); break;
+//                case PLAN_VIEW: transform3D.rotX(-1*Math.PI/2.0d);break;
+//                case ZOOM_OUT: transform3D.setTranslation(new Vector3f(0.0f, 0.0f, 3.0f)); break;
+//            }
+
+            return transform3D;
+            }
+
+    }
+
+
+//    private class vpTransform3D extends Transform3D {
+//        public vpTransform3D(int i) {
+//        }
+//    }
+    
 }
