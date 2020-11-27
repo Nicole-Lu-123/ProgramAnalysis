@@ -34,8 +34,8 @@ public class Main {
 //            System.out.println(s);
 //        }
 //        CombineInfo cbi2 = new CombineInfo(file1.getPath());
-        String oldpath = "C:\\Users\\卢晓萱\\Desktop\\cpsc410_project1_team16-master\\DSL-photoeditor\\src";
-        String newpath = "C:\\Users\\卢晓萱\\Desktop\\cpsc410_project1_team16-9953fa8b1a4ac0d26668bd2a1a5fb09ec5a806a7\\DSL-photoeditor\\src";
+        String oldpath = "C:\\Users\\Desktop\\cpsc410_project1_team16-master\\DSL-photoeditor\\src";
+        String newpath = "C:\\Users\\Desktop\\cpsc410_project1_team16-9953fa8b1a4ac0d26668bd2a1a5fb09ec5a806a7\\DSL-photoeditor\\src";
         Compare compare = new Compare(oldpath,newpath);
         Map<String, List<String>> add = compare.compareMethod().get(0);
         Map<String, List<String>> delet = compare.compareMethod().get(1);
