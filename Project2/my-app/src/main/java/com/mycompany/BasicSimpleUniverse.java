@@ -1,5 +1,6 @@
 package com.mycompany;
 import com.sun.j3d.utils.applet.MainFrame;
+import com.sun.j3d.utils.behaviors.keyboard.KeyNavigator;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
 import com.sun.j3d.utils.geometry.Box;
@@ -23,6 +24,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener {
     public SimpleUniverse universe;
     public BranchGroup rootBranchGroup;
     public BoundingSphere bound;
+    public ViewPlatform cameraView;
 
     public HashMap<String,Point3f> classLocMap = new HashMap();
     public int numClass;
@@ -47,11 +49,34 @@ public class BasicSimpleUniverse extends Applet implements ActionListener {
         BranchGroup view = createViewGraph();
         universe.addBranchGraph(view);
 
+        //view
+
+        BranchGroup viewGroup = new BranchGroup();
+        cameraView = new ViewPlatform();
+        TransformGroup viewtransformGroup = new TransformGroup();
+        viewtransformGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+        viewtransformGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        viewtransformGroup.setCapability(TransformGroup.ALLOW_LOCAL_TO_VWORLD_READ);
+        viewtransformGroup.setTransform(new Transform3D());
+        viewtransformGroup.addChild(cameraView);
+
+        viewGroup.addChild(viewtransformGroup);
+
+        View v = new View();
+        v.setBackClipDistance(3000.0);
+        v.setPhysicalBody(new PhysicalBody());
+        v.setPhysicalEnvironment(new PhysicalEnvironment());
+        v.addCanvas3D(canvas);
+        v.attachViewPlatform(cameraView);
+
+        KeyNavigator key = new KeyNavigator(viewtransformGroup);
+//        view.addChild(key);
+
 
     }
 
     public BranchGroup createViewGraph() {
-        Integer viewNumber = 2;
+        Integer viewNumber = 4;
         Canvas3D[] canvas3D = new Canvas3D[viewNumber];
         String viewOption[] = {"Front View", "Side View", "Plan View", "Zoom Out View"};
         TransformGroup viewPointPlatform;
@@ -86,6 +111,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener {
     
 
     public BranchGroup createSceneGraph() {
+
         TransformGroup tg = new TransformGroup();
         Transform3D trans3d = new Transform3D();
         trans3d.setScale(10);
@@ -128,6 +154,28 @@ public class BasicSimpleUniverse extends Applet implements ActionListener {
         rootBranchGroup.addChild(new Shape3D(lineX));
 
         rootBranchGroup.compile();
+
+
+        //view
+//        BranchGroup viewGroup = new BranchGroup();
+//        cameraView = new ViewPlatform();
+//        TransformGroup viewtransformGroup = new TransformGroup();
+//        viewtransformGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+//        viewtransformGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+//        viewtransformGroup.setCapability(TransformGroup.ALLOW_LOCAL_TO_VWORLD_READ);
+//        viewtransformGroup.setTransform(new Transform3D());
+//        viewtransformGroup.addChild(cameraView);
+//
+//        viewGroup.addChild(viewtransformGroup);
+
+
+//        View v = new View();
+//        v.setBackClipDistance(3000.0);
+//        v.setPhysicalBody(new PhysicalBody());
+//        v.setPhysicalEnvironment(new PhysicalEnvironment());
+//        v.addCanvas3D(can);
+
+
 
         return rootBranchGroup;
     }
