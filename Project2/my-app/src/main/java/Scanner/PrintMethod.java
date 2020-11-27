@@ -25,10 +25,10 @@ public class PrintMethod extends VoidVisitorAdapter<Void> {
 
     }
 
-//     public void visit(ForStmt f, Void arg) {
-//         super.visit(f, arg);
-//         countStates++;
-//     }
+     public void visit(ForStmt f, Void arg) {
+         super.visit(f, arg);
+
+     }
 
 
 
