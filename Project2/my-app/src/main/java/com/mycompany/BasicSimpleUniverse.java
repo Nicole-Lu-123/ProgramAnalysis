@@ -237,7 +237,7 @@ public class BasicSimpleUniverse extends Applet{
 
         allowMouseRotateTranslate(tg);
 
-        // TODO:if there's for loop in this method, then make the cube self-rotating
+        // TODO:if there's for loop in this method, then make the cube self-rotating??
         //objRotate(tg);
     }
 
