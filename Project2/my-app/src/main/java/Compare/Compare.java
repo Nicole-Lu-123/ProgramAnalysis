@@ -96,8 +96,8 @@ public class Compare {
                 if (!cbi1MethodMap.get(str).contains(str2Commit)) {
                     result.add(str2Commit);
                 }
-                MwthodAlreadyAdd.put(str, result);
             }
+            MwthodAlreadyAdd.put(str, result);
         }
         return MwthodAlreadyAdd;
 
@@ -115,8 +115,9 @@ public class Compare {
                 if (!cbi2MethodMap.get(str).contains(str1Commit)) {
                     result.add(str1Commit);
                 }
-                MethodAlreadyDelete.put(str, result);
+
             }
+            MethodAlreadyDelete.put(str, result);
         }
         return MethodAlreadyDelete;
 
