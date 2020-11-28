@@ -34,10 +34,10 @@ TA advise:
 ## Milestone 2
 - Planned division of main responsibilities between team members
 
-  - Nicole: Deal with static analysis (feature, method, dependency), visualizations
-  - Tian: Deal with static analysis (same as above), visualizations
-  - Sunny: Deal with dynamic analysis (check for loop, function call, etc), visualizations
-  - Difei: Deal with dynamic analysis (same as above), visualizations
+  - Nicole: Deal with analysis (feature, method, dependency,inherited,extend,comparison between two commit)
+  - Tian: Deal with analysis (same as above)
+  - Sunny:  visualizations
+  - Difei:  visualizations
 
 
 
@@ -119,8 +119,8 @@ We planned to conduct our final user study to another 2 person after the impleme
 
 
 - Planned timeline for the remaining days
-  - Nov 21st - Nov 23st: Parse the data, Static and Dynamic analysis (Nicole and Difei)
-  - Nov 22nd - Nov 25th: Visualization (Sunny and Tian)
-  - Nov 26th - Nov 27th: Final user study, Improve the implementation and Test
+  - Nov 21st - Nov 27st: Parse the data, Static (all class name, all method name, all method which contain loops),dependency (inherited class; extend class; A class contains B class..); All comparison between two commit. Hope to do Dynamic Analysis ---- (Nicole and Yuxin)
+  - Nov 21nd - Nov 27th: Visualization (Used the stored data) --- (Sunny and Difei)
+  - Nov 27th - Nov 28th: Final user study, Improve the implementation and Test
   - Nov 28th: Preparation of the video, like writing script
   - Nov 29th: Make the video
