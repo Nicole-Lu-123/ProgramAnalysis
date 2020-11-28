@@ -88,6 +88,7 @@ public class BasicSimpleUniverse extends Applet {
         classextendinfo = cbi1.getextendmap();
         classimpleinfo = cbi1.getintermap();
         classdependinfo = cbi1.getdependmap();
+        classLoopMethodinfo = cbi1.getClassLoopinfo();
         classNum = classmethodinfo.size();
         System.out.println("Number of class of 1st commit: " + classNum);
     }
@@ -97,6 +98,7 @@ public class BasicSimpleUniverse extends Applet {
         classextendinfo2 = cbi2.getextendmap();
         classimpleinfo2 = cbi2.getintermap();
         classdependinfo2 = cbi2.getdependmap();
+        classLoopMethodinfo2 = cbi2.getClassLoopinfo();
         classNum2 = classmethodinfo2.size();
         System.out.println("Number of class of 2nd commit: " + classNum2);
     }
