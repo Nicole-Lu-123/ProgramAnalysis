@@ -13,6 +13,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.mycompany.BasicSimpleUniverse;
 import com.sun.j3d.utils.applet.MainFrame;
 import inherited.inheritedClass;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,34 +24,56 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
+        String oldpath = "C:\\Users\\liuce\\Desktop\\cpsc410_project1_team16(1)\\DSL-photoeditor\\src";
+        String newpath = "C:\\Users\\liuce\\Desktop\\cpsc410_project1_team16-master(2)\\DSL-photoeditor\\src";
         //File file1 = new File("C:\\cpsc410_project1_team16-master\\DSL-photoeditor\\src");
         //File file2 = new File("/Users/tianyuxin/Downloads/tinyVarsProcSkeleton-3/src");
-        File file1 = new File("C:\\Users\\liuce\\Desktop\\cpsc410_project1_team16-master\\DSL-photoeditor\\src");
+        File file1 = new File(oldpath);
         CombineInfo cbi1 = new CombineInfo(file1.getPath());
-        // cbi1.generate(); // delete, add this to CombineInfo constructor
 
+        File file2 = new File(newpath);
+        CombineInfo cbi2 = new CombineInfo(file2.getPath());
+        System.out.println("ClassLoopMethod of 1st commit: " + cbi1.getClassLoopinfo());
+        System.out.println("ClassLoopMethod of 2nd commit: " + cbi2.getClassLoopinfo());
         System.out.println("Done first commit analysis!!!");
-//        for(String s :cbi1.classdependinfo.get("PhotoeditorParser")){
-//            System.out.println(s);
-//        }
-//        CombineInfo cbi2 = new CombineInfo(file1.getPath());
-//        String oldpath = "C:\\cpsc410_project1_team16-master\\DSL-photoeditor\\src\\ast";
-//        String newpath = "C:\\cpsc410_project1_team16-master\\DSL-photoeditor\\src\\libs";
-//        Compare compare = new Compare(oldpath,newpath);
-//        List<String> addclass = compare.compareclass().get(0);
-//        List<String> deletclass = compare.compareclass().get(1);
-//        System.out.println("Add class:");
-//        for(String s :addclass){
-//            System.out.println(s);
-//        }
-//        System.out.println("Delete class:");
-//        for(String s :deletclass){
-//            System.out.println(s);
-//        }
+
+        Compare compare = new Compare(oldpath, newpath);
+        List<String> addclass = compare.compareClass().get(0);
+        List<String> deletclass = compare.compareClass().get(1);
+
+        System.out.println("Add class: ");
+        System.out.println(addclass);
+        System.out.println("Delete Class: ");
+        System.out.println(deletclass);
+
+        System.out.println("Add methods: ");
+        System.out.println(compare.methodAdd());
+        System.out.println("Delete methods: ");
+        System.out.println(compare.methodDelet());
+
+        System.out.println("Add extension: ");
+        System.out.println(compare.addextend());
+        System.out.println("Delete extension: ");
+        System.out.println(compare.removeextend());
+
+        System.out.println("Add implementation: ");
+        System.out.println(compare.addinterface());
+        System.out.println("Delete implementation: ");
+        System.out.println(compare.removeinterface());
+
+        System.out.println("Add dependency: ");
+        System.out.println(compare.adddep());
+        System.out.println("Delete dependency: ");
+        System.out.println(compare.removedep());
 
 
         // visualization
-        new MainFrame(new BasicSimpleUniverse(cbi1), 700, 700);
+        new MainFrame(new BasicSimpleUniverse(cbi1, cbi2, compare), 700, 700);
     }
 
+
 }
+
+
+
+
