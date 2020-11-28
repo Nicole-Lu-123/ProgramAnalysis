@@ -20,19 +20,24 @@ public class CombineInfo {
     public  Map<String, List<String>> classimpleinfo;
     public  Map<String, List<String>> classdependinfo;
     public  Map<String, Integer> classsizeinfo;
+    public Map<String, List<String>> classLoopinfo;
     public  List<String> classinfo;;
+
     public String path;
 
     public CombineInfo(String path) throws IOException {
         this.path = path;
         generate();
     }
+
     public void generate() throws IOException {
         classmethodinfo = new HashMap<>();
         classextendinfo = new HashMap<>();
         classimpleinfo = new HashMap<>();
         classdependinfo = new HashMap<>();
         classsizeinfo = new HashMap<>();
+        classLoopinfo = new HashMap<String, List<String>>();
+
         File file1 = new File(this.path);
         CollectClass collectclass = new CollectClass(file1.getPath());
         CollectName cn = new CollectName();
@@ -47,12 +52,15 @@ public class CombineInfo {
             List<String> extendname = ic.getExtendName(ic, cu);
             List<String> implename = ic.getInterfaceName(ic, cu);
             List<String> methods = cn.getName(path);
+            List<String> methodsHasLoop = cn.getLoopMethod(path);
             List<String> dependencies = dep.clean(dep.getDependency(cu), lostr, s);
             classmethodinfo.put(s, methods);
             classextendinfo.put(s, extendname);
             classimpleinfo.put(s, implename);
             classdependinfo.put(s, dependencies);
             classsizeinfo.put(s,cn.count(methods));
+            classLoopinfo.put(s, methodsHasLoop);
+
         }
     }
 
@@ -67,6 +75,9 @@ public class CombineInfo {
     }
     public Map<String, List<String>> getintermap(){
         return classimpleinfo;
+    }
+    public Map<String, List<String>> getClassLoopinfo() {
+        return classLoopinfo;
     }
 
 }
