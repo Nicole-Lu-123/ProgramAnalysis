@@ -1,8 +1,12 @@
 package com.mycompany;
+
 import java.applet.Applet;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.media.j3d.*;
 import javax.vecmath.Color3f;
@@ -10,6 +14,8 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import Compare.Compare;
+import Scanner.SetOfName;
 import com.mycompany.app.CombineInfo;
 import com.sun.j3d.utils.applet.MainFrame;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
@@ -19,21 +25,37 @@ import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.image.TextureLoader;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
-public class BasicSimpleUniverse extends Applet{
+public class BasicSimpleUniverse extends Applet {
     public SimpleUniverse universe;
     public BranchGroup rootBranchGroup;
     public BoundingSphere bound;
 
-    public Map<String, java.util.List<String>> classmethodinfo;
-    public  Map<String, java.util.List<String>> classextendinfo;
-    public  Map<String, java.util.List<String>> classimpleinfo;
-    public  Map<String, List<String>> classdependinfo;
+    public Map<String, List<String>> classmethodinfo;
+    public Map<String, List<String>> classextendinfo;
+    public Map<String, List<String>> classimpleinfo;
+    public Map<String, List<String>> classdependinfo;
+    public Map<String, List<String>> classLoopMethodinfo;
+    public Map<String, List<String>> classmethodinfo2;
+    public Map<String, List<String>> classextendinfo2;
+    public Map<String, List<String>> classimpleinfo2;
+    public Map<String, List<String>> classdependinfo2;
+    public Map<String, List<String>> classLoopMethodinfo2;
+    public List<String> addClass;
+    public List<String> deleteClass;
+    public Map<String, List<String>> addMethod;
+    public Map<String, List<String>> deleteMethod;
+    public Map<String, List<String>> addExtend;
+    public Map<String, List<String>> deleteExtend;
+    public Map<String, List<String>> addImple;
+    public Map<String, List<String>> deleteImple;
+    public Map<String, List<String>> addDep;
+    public Map<String, List<String>> deleteDep;
     public int classNum;
-    public List<String> classNameList;
+    public int classNum2;
 
-    public HashMap<String,Point3f> classLocMap = new HashMap();
+    public HashMap<String, Point3f> classLocMap = new HashMap();
 
-    public static final Color3f BLUE = new Color3f(Color.blue);
+
     public static final Color3f BLACK = new Color3f(0.0f, 0.0f, 0.0f);
     public static final Color3f WHITE = new Color3f(1.0f, 1.0f, 1.0f);
 
@@ -41,13 +63,16 @@ public class BasicSimpleUniverse extends Applet{
 //        new MainFrame(new BasicSimpleUniverse(cbi1), 700, 700);
 //    }
 
-    public BasicSimpleUniverse(CombineInfo cbi1){
+    public BasicSimpleUniverse(CombineInfo cbi1, CombineInfo cbi2, Compare compare) {
         set_up(cbi1);
+        set_up2(cbi2);
+        set_up(compare);
+
 
         setLayout(new BorderLayout());
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
         Canvas3D canvas = new Canvas3D(config);
-        canvas.setSize(700,700);
+        canvas.setSize(700, 700);
         rootBranchGroup = new BranchGroup();
         add("Center", canvas);
         BranchGroup scene = createSceneGraph();
@@ -64,7 +89,30 @@ public class BasicSimpleUniverse extends Applet{
         classimpleinfo = cbi1.getintermap();
         classdependinfo = cbi1.getdependmap();
         classNum = classmethodinfo.size();
-        System.out.println("Number of class: " + classNum);
+        System.out.println("Number of class of 1st commit: " + classNum);
+    }
+
+    private void set_up2(CombineInfo cbi2) {
+        classmethodinfo2 = cbi2.getmethodmap();
+        classextendinfo2 = cbi2.getextendmap();
+        classimpleinfo2 = cbi2.getintermap();
+        classdependinfo2 = cbi2.getdependmap();
+        classNum2 = classmethodinfo2.size();
+        System.out.println("Number of class of 2nd commit: " + classNum2);
+    }
+
+
+    private void set_up(Compare compare) {
+        addClass = compare.compareClass().get(0);
+        deleteClass = compare.compareClass().get(1);
+        addMethod = compare.methodAdd();
+        deleteMethod = compare.methodDelet();
+        addExtend = compare.addextend();
+        deleteExtend = compare.removeextend();
+        addImple = compare.addinterface();
+        deleteImple = compare.removeinterface();
+        addDep = compare.adddep();
+        deleteDep = compare.removedep();
     }
 
     public BranchGroup createSceneGraph() {
@@ -78,14 +126,12 @@ public class BasicSimpleUniverse extends Applet{
         TransformGroup moveGroup = new TransformGroup();
         Transform3D move = new Transform3D();
         move.setTranslation(new Vector3f(0.15f, 0.0f, -100.0f));
-        bound = new BoundingSphere(new Point3d(0.0,0.0,0.0), 1000.0);
+
+        bound = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 1000.0);
         TextureLoader backgroundTexture = new TextureLoader("./Project2/my-app/universe2.jpg", this);
         Background bg = new Background(backgroundTexture.getImage());
         bg.setImageScaleMode(Background.SCALE_FIT_ALL);
         bg.setApplicationBounds(bound);
-       // rootBranchGroup.addChild(bg);
-//        moveGroup.setTransform(move);
-//        moveGroup.addChild(bg);
         tg.setTransform(move);
         tg.addChild(bg);
         rootBranchGroup.addChild(moveGroup);
@@ -95,61 +141,92 @@ public class BasicSimpleUniverse extends Applet{
         Vector3f lightDirection = new Vector3f(4.0f, -7.0f, -12.0f);
         DirectionalLight light = new DirectionalLight(lightColor, lightDirection);
         light.setInfluencingBounds(bound);
-        light.setDirection(new Vector3f(0.15f,0.0f,-100.0f));
+        light.setDirection(new Vector3f(0.15f, 0.0f, -100.0f));
         rootBranchGroup.addChild(light);
 
         // create a sphere for each class
-        classmethodinfo.forEach((className, methodList)->{
+        classmethodinfo.forEach((className, methodList) -> {
             float xrandom = randomFloatOne();
             float yrandom = randomFloatOne();
             float zrandom = randomFloatOne();
-            addSphere(className, 0.05f,xrandom,yrandom,zrandom);
+            addSphere(className, 0.05f, xrandom, yrandom, zrandom);
+        });
+        // create a blinking sphere for each newly added class
+        for (String className : addClass) {
+            float xrandom = randomFloatOne();
+            float yrandom = randomFloatOne();
+            float zrandom = randomFloatOne();
+            addNewSphere(className, 0.05f, xrandom, yrandom, zrandom);
+        }
+
+        // draw lines
+        if (!classextendinfo.isEmpty()) {
+            classextendinfo.forEach((className, classList) -> {
+                System.out.println("Class: " + className + "extends " + classList);
+                for (String extendClass : classList) {
+                    drawLine(className, extendClass, new Color3f(Color.green));
+                }
+            });
+        }
+        if (!classimpleinfo.isEmpty()) {
+            classimpleinfo.forEach((className, classList) -> {
+                System.out.println("Class: " + className + "implements " + classList);
+                for (String impleClass : classList) {
+                    drawLine(className, impleClass, new Color3f(Color.white));
+                }
+            });
+        }
+        if (!classdependinfo.isEmpty()) {
+            classdependinfo.forEach((className, classList) -> {
+                System.out.println("Class: " + className + "calls functions in " + classList);
+                for (String depenClass : classList) {
+                    drawLine(className, depenClass, new Color3f(Color.blue));
+                }
+            });
+        }
+
+        // newly added relation of classes
+        addExtend.forEach((className, classList) -> {
+            for (String s : classList) {
+                drawNewLine(className, s, new Color3f(Color.green));
+            }
+        });
+        addImple.forEach((className, classList) -> {
+            for (String s : classList) {
+                drawNewLine(className, s, new Color3f(Color.white));
+            }
+        });
+        addDep.forEach((className, classList) -> {
+            for (String s : classList) {
+                drawNewLine(className, s, new Color3f(Color.blue));
+            }
         });
 
-        // draw line of class extension
-        classextendinfo.forEach((className,classList)->{
-            for(String extendClass:classList){
-                drawLine(className, extendClass,new Color3f(Color.green));
-            }
-        });
-        classimpleinfo.forEach((className,classList)->{
-            for(String impleClass:classList){
-                drawLine(className, impleClass,new Color3f(Color.white));
-            }
-        });
-        classdependinfo.forEach((className,classList)->{
-            for(String depenClass:classList){
-                drawLine(className, depenClass,new Color3f(Color.blue));
-            }
-        });
+        System.out.println("2nd Commit added classes relations: ");
+        System.out.println("Class extends:");
+        System.out.println(classextendinfo2);
+        System.out.println("Class implements:");
+        System.out.println(classimpleinfo2);
+        System.out.println("Class function calls:");
+        System.out.println(classdependinfo2);
+
+        SetOfName son = new SetOfName();
+        System.out.println(son.getMethodWhichhasLoop());
 
         rootBranchGroup.compile();
-
         return rootBranchGroup;
     }
 
-    // draw a line between two planets(classes)
-    private void drawLine(String className, String extendClass, Color3f color) {
-        LineArray lineX = new LineArray(2, LineArray.COORDINATES);
-        lineX.setCoordinate(0, classLocMap.get(className));
-        lineX.setCoordinate(1, classLocMap.get(extendClass));
 
+    // a newly added class blinks several times
+    private void addNewSphere(String className, float radius, float x, float y, float z) {
+        Material mat = new Material();
         Appearance app = new Appearance();
-        ColoringAttributes ca = new ColoringAttributes();
-        ca.setColor(color);
-        app.setColoringAttributes(ca);
-        Shape3D shapeLine = new Shape3D(lineX, app);
-        rootBranchGroup.addChild(shapeLine);
-    }
+        mat.setDiffuseColor(new Color3f(0.0f, 0.5f, 0.5f)); // color: blue-green
+        app.setMaterial(mat);
 
-    private float randomFloatOne() {
-        Random r = new Random();
-        float random = -1.0f + r.nextFloat() * (1.0f-(-1.0f));
-        return random;
-    }
-
-    public void addSphere(String className, float radius, float x, float y, float z) {
         Sphere sphere = new Sphere(radius);
+        sphere.setAppearance(app);
         TransformGroup tg = new TransformGroup();
         Transform3D transform = new Transform3D();
         // set location of sphere at (x,y,z) in the scene
@@ -159,27 +236,223 @@ public class BasicSimpleUniverse extends Applet{
         rootBranchGroup.addChild(tg);
         allowMouseRotateTranslate(tg);
         // add class name under the planet
-        addText(className,x,y,z);
+        addText(className, x, y, z);
         // map to track the location of the sphere(class)
-        classLocMap.put(className, new Point3f(x,y,z));
+        classLocMap.put(className, new Point3f(x, y, z));
+
+        TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
+        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
+        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
+
+        app.setTransparencyAttributes(transparency);
+        app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
+        app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
+
+        Alpha alpha1 = new Alpha(5, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
+                0, 0, 2000, 0, 0, 2000, 0, 0);
+        TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
+        transparency1.setSchedulingBounds(bound);
+        tg.addChild(transparency1);
+
+        // add methods of the corresponding class
+        Color3f randomcolor = randomColor3f();
+        for (String method : classmethodinfo2.get(className)) {
+            float xrandom = randomFloat(3 * radius, -3 * radius, radius);
+            float yrandom = randomFloat(3 * radius, -3 * radius, radius);
+            float zrandom = randomFloat(3 * radius, -3 * radius, radius);
+            addNewCube(x + xrandom, y + yrandom, z + zrandom, randomcolor, className, method);
+        }
+    }
+
+    // draw a line between two planets(classes)
+    private void drawLine(String className, String otherClass, Color3f color) {
+        // check if the first commit contains the extend class
+        if (classLocMap.containsKey(otherClass)) {
+            TransformGroup tg = new TransformGroup();
+            rootBranchGroup.addChild(tg);
+
+            LineArray lineX = new LineArray(2, LineArray.COORDINATES);
+            lineX.setCoordinate(0, classLocMap.get(className));
+            lineX.setCoordinate(1, classLocMap.get(otherClass));
+
+            Appearance app = new Appearance();
+            ColoringAttributes ca = new ColoringAttributes();
+            ca.setColor(color);
+            app.setColoringAttributes(ca);
+            Shape3D shapeLine = new Shape3D(lineX, app);
+            tg.addChild(shapeLine);
+
+            // deleted relations will blink forever
+            deleteRelation(className, otherClass, tg, app, deleteExtend);
+            deleteRelation(className, otherClass, tg, app, deleteImple);
+            deleteRelation(className, otherClass, tg, app, deleteDep);
+        }
+    }
+
+    private void drawNewLine(String className, String otherClass, Color3f color) {
+        if (classLocMap.containsKey(otherClass)) {
+            TransformGroup tg = new TransformGroup();
+            rootBranchGroup.addChild(tg);
+
+            LineArray lineX = new LineArray(2, LineArray.COORDINATES);
+            lineX.setCoordinate(0, classLocMap.get(className));
+            lineX.setCoordinate(1, classLocMap.get(otherClass));
+
+            Appearance app = new Appearance();
+            ColoringAttributes ca = new ColoringAttributes();
+            ca.setColor(color);
+            app.setColoringAttributes(ca);
+            Shape3D shapeLine = new Shape3D(lineX, app);
+            tg.addChild(shapeLine);
+
+            // blinks several times
+            TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
+            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
+            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
+
+            app.setTransparencyAttributes(transparency);
+            app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
+            app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
+
+            Alpha alpha1 = new Alpha(6, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
+                    0, 0, 2000, 0, 0, 2000, 0, 0);
+            TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
+            transparency1.setSchedulingBounds(bound);
+            tg.addChild(transparency1);
+
+        }
+    }
+
+
+    private void deleteRelation(String className, String otherClass, TransformGroup tg, Appearance app,
+                                Map<String, List<String>> relation) {
+        if (relation.containsKey(className) && relation.get(className).contains(otherClass)) {
+            TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
+            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
+            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
+
+            app.setTransparencyAttributes(transparency);
+            app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
+            app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
+
+            Alpha alpha1 = new Alpha(-1, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
+                    0, 0, 2000, 0, 0, 2000, 0, 0);
+            TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
+            transparency1.setSchedulingBounds(bound);
+            tg.addChild(transparency1);
+        }
+    }
+
+    private float randomFloatOne() {
+        Random r = new Random();
+        float random = -1.0f + r.nextFloat() * (1.0f - (-1.0f));
+        return random;
+    }
+
+    public void addSphere(String className, float radius, float x, float y, float z) {
+        Material mat = new Material();
+        Appearance app = new Appearance();
+        mat.setDiffuseColor(new Color3f(0.0f, 0.5f, 1.0f)); // color: baby blue
+        app.setMaterial(mat);
+
+        Sphere sphere = new Sphere(radius);
+        sphere.setAppearance(app);
+        TransformGroup tg = new TransformGroup();
+        Transform3D transform = new Transform3D();
+        // set location of sphere at (x,y,z) in the scene
+        transform.setTranslation(new Vector3f(x, y, z));
+        tg.setTransform(transform);
+        tg.addChild(sphere);
+        rootBranchGroup.addChild(tg);
+        allowMouseRotateTranslate(tg);
+        // add class name under the planet
+        addText(className, x, y, z);
+        // map to track the location of the sphere(class)
+        classLocMap.put(className, new Point3f(x, y, z));
+
+        // if the class is deleted at next commit, then sphere will keep blinking
+        if (deleteClass.contains(className)) {
+            TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
+            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
+            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
+
+            app.setTransparencyAttributes(transparency);
+            app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
+            app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
+
+            Alpha alpha1 = new Alpha(-1, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
+                    0, 0, 1000, 0, 0, 1000, 0, 0);
+            TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
+            transparency1.setSchedulingBounds(bound);
+            tg.addChild(transparency1);
+
+        }
 
         // for each method in this class, create a cube
         Color3f randomcolor = randomColor3f();
         int methodNum = classmethodinfo.get(className).size();
-        System.out.println("Method Number of "+className+": "+methodNum);
-        for (int k = 0; k<methodNum;k++){
-            float xrandom = randomFloat(3*radius,-3*radius,radius);
-            float yrandom = randomFloat(3*radius,-3*radius,radius);
-            float zrandom = randomFloat(3*radius,-3*radius,radius);
-            addCube(x+xrandom,y+yrandom,z+zrandom,randomcolor);
+        System.out.println("Method Number of " + className + ": " + methodNum);
+        for (String method : classmethodinfo.get(className)) {
+            float xrandom = randomFloat(3 * radius, -3 * radius, radius);
+            float yrandom = randomFloat(3 * radius, -3 * radius, radius);
+            float zrandom = randomFloat(3 * radius, -3 * radius, radius);
+            addCube(x + xrandom, y + yrandom, z + zrandom, randomcolor, className, method);
+        }
+
+        System.out.println("Add new methods !!!");
+        if (addMethod.containsKey(className) && !addMethod.get(className).isEmpty()) {
+            for (String method : addMethod.get(className)) {
+                float xrandom = randomFloat(3 * radius, -3 * radius, radius);
+                float yrandom = randomFloat(3 * radius, -3 * radius, radius);
+                float zrandom = randomFloat(3 * radius, -3 * radius, radius);
+                addNewCube(x + xrandom, y + yrandom, z + zrandom, randomcolor, className, method);
+            }
         }
 
 
     }
 
-    private void addText(String className, float x,float y, float z) {
+    private void addNewCube(float xpos, float ypos, float zpos, Color3f color, String className, String method) {
+        Appearance app = new Appearance();
+        Material mat = new Material(color, BLACK, color, WHITE, 128.0f);
+        //mat.setShininess(100.0f);
+        app.setMaterial(mat);
+        float l = 0.015f;
+        Box b = new Box(l, l, l, app);
+
+        TransformGroup tg = new TransformGroup();
+        Transform3D transform = new Transform3D();
+        // set location of sphere at (x,y,z) in the scene
+        transform.setTranslation(new Vector3f(xpos, ypos, zpos));
+        tg.setTransform(transform);
+        tg.addChild(b);
+        //cuberoate.addChild(tg);
+        rootBranchGroup.addChild(tg);
+
+        // the newly added method will blink several times
+        TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
+        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
+        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
+
+        app.setTransparencyAttributes(transparency);
+        app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
+        app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
+
+        Alpha alpha1 = new Alpha(5, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
+                0, 0, 2000, 0, 0, 2000, 0, 0);
+        TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
+        transparency1.setSchedulingBounds(bound);
+        tg.addChild(transparency1);
+
+        allowMouseRotateTranslate(tg);
+
+        // objRotate(sub);
+    }
+
+    private void addText(String className, float x, float y, float z) {
         Transform3D t3D = new Transform3D();
-        t3D.setTranslation(new Vector3f(x,y+0.05f,z));
+        t3D.setTranslation(new Vector3f(x, y + 0.05f, z));
+
         TransformGroup objMove = new TransformGroup(t3D);
         rootBranchGroup.addChild(objMove);
 
@@ -203,7 +476,6 @@ public class BasicSimpleUniverse extends Applet{
         textShape.setAppearance(textAppear);
         objSpin.addChild(textShape);
 
-
         Transform3D trans3d = new Transform3D();
         trans3d.setScale(0.08);
         objSpin.setTransform(trans3d);
@@ -211,21 +483,25 @@ public class BasicSimpleUniverse extends Applet{
     }
 
     // randomly pick up a float in the range (min, -radius) ,(radius, max)
-    public float randomFloat(float max, float min, float radius){
+    public float randomFloat(float max, float min, float radius) {
         Random r = new Random();
-        float random = min + r.nextFloat() * (max-min);
-        while (random>-radius && random< radius){
-            random = min + r.nextFloat() * (max-min);
+
+        float random = min + r.nextFloat() * (max - min);
+        while (random > -radius && random < radius) {
+            random = min + r.nextFloat() * (max - min);
         }
         return random;
     }
 
-    public void addCube(float xpos, float ypos, float zpos, Color3f color) {
+
+    // a cube represents a method
+    public void addCube(float xpos, float ypos, float zpos, Color3f color, String className, String method) {
         Appearance app = new Appearance();
-        //app.setMaterial(new Material(color, black, color, white, 70f));
-        app.setMaterial(new Material(color, BLACK, color, WHITE, 70f));
+        Material mat = new Material(color, BLACK, color, WHITE, 128.0f);
+        //mat.setShininess(100.0f);
+        app.setMaterial(mat);
         float l = 0.015f;
-        Box b = new Box(l,l,l,app);
+        Box b = new Box(l, l, l, app);
 
         TransformGroup tg = new TransformGroup();
         Transform3D transform = new Transform3D();
@@ -235,9 +511,28 @@ public class BasicSimpleUniverse extends Applet{
         tg.addChild(b);
         rootBranchGroup.addChild(tg);
 
+        // if the method is deleted in next commit, then the cube will keep blinking
+        if (deleteMethod.containsKey(className)) {
+            if (deleteMethod.get(className).contains(method)) {
+                TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
+                transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
+                transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
+
+                app.setTransparencyAttributes(transparency);
+                app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
+                app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
+
+                Alpha alpha1 = new Alpha(-1, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
+                        0, 0, 1000, 0, 0, 1000, 0, 0);
+                TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
+                transparency1.setSchedulingBounds(bound);
+                tg.addChild(transparency1);
+            }
+        }
+
         allowMouseRotateTranslate(tg);
 
-        // TODO:if there's for loop in this method, then make the cube self-rotating??
+        // if the method has for-loop in the body, then the rotation self rotates
         //objRotate(tg);
     }
 
@@ -247,22 +542,26 @@ public class BasicSimpleUniverse extends Applet{
         float r = rand.nextFloat() / 2f + 0.5f;
         float g = rand.nextFloat() / 2f + 0.5f;
         float b = rand.nextFloat() / 2f + 0.5f;
-        return new Color3f(r,g,b);
+
+        return new Color3f(r, g, b);
     }
 
-    // not working here
+    // not working here????
     public void objRotate(TransformGroup objTrans) {
+        objTrans.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
         Transform3D yAxis = new Transform3D();
-        Alpha rotationAlpha = new Alpha(-1,Alpha.INCREASING_ENABLE,
-                0,0,
-                4000,0,0,
-                0,0,0);
-        RotationInterpolator rotator = new RotationInterpolator(rotationAlpha, objTrans,yAxis,0.0f,(float)Math.PI*2.0f);
+        Alpha rotationAlpha = new Alpha(-1, Alpha.INCREASING_ENABLE,
+                0, 0,
+                4000, 0, 0,
+                0, 0, 0);
+        RotationInterpolator rotator = new RotationInterpolator(rotationAlpha, objTrans, yAxis,
+                0.0f, (float) Math.PI * 2.0f);
         rotator.setSchedulingBounds(bound);
         objTrans.addChild(rotator);
     }
 
-    public void allowMouseRotateTranslate(TransformGroup tg){
+    public void allowMouseRotateTranslate(TransformGroup tg) {
         tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tg.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
 
