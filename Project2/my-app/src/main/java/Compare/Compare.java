@@ -29,7 +29,7 @@ public class Compare {
         cbi2MethodMap = cbi2.getmethodmap();
         for (String r : lostrnew) {
             if (lostrold.contains(r))
-            SameClassBetweenTwoCommit.add(r);
+                SameClassBetweenTwoCommit.add(r);
         }
     }
 
@@ -154,7 +154,7 @@ public class Compare {
             removedextend.put(common,store);
         }
         return removedextend;
-}
+    }
 
     public Map<String, List<String>> addinterface() {
         Map<String, List<String>> addedinter = cbi2.classimpleinfo;
