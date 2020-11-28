@@ -40,15 +40,31 @@ public class CollectName {
     }
 
 
+    public List<String> getLoopMethod(String path) throws  FileNotFoundException{
+        File file = new File(path);
+        System.out.println("path for class = " + file.getPath());
+//        String fPaths = file.getPath();
+        VoidVisitor<? extends Object> NameOfMethod = new PrintMethod();
+        CompilationUnit cu = StaticJavaParser.parse(new FileInputStream(file.getPath()));
+
+
+        NameOfMethod.visit(cu, null);
+        VoidVisitor<List<String>> methodNameCollector = new LoopMethod();
+
+        List<String> methodNames = new ArrayList<>();
+        methodNameCollector.visit(cu, methodNames);
+
+        return methodNames;
+
+    }
+
     public static boolean process(Node node) {
         int complexity = 0;
         for (ForStmt forStmt : node.getChildNodesByType(ForStmt.class)) {
             // We found an for
-                if (forStmt.isForStmt()) {
-                    return true;
-                }
-
-
+            if (forStmt.isForStmt()) {
+                return true;
+            }
         }
         return false;
     }
@@ -60,9 +76,4 @@ public class CollectName {
 
 
 }
-
-
-
-
-
 
