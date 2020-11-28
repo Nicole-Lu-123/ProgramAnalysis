@@ -4,11 +4,28 @@
       <root url="jar:///Program Files/Java/Java3D/1.5.1/lib/ext/j3dcore.jar!/" />
       <root url="jar:///Program Files/Java/Java3D/1.5.1/lib/ext/j3dutils.jar!/" />
       <root url="jar:///Program Files/Java/Java3D/1.5.1/lib/ext/vecmath.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/j3dcore.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/j3dutils.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/vecmath.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/gluegen-2.4-b937-20200306-macosx-universal/jar/gluegen-rt-natives-macosx-universal.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/jogl-2.4-b1506-20200306-macosx-universal/jar/jogl-all-android-natives-macosx-universal.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/jogl-2.4-b1506-20200306-macosx-universal/jar/jogl-all-mobile-natives-macosx-universal.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/jogl-2.4-b1506-20200306-macosx-universal/jar/jogl-all-natives-macosx-universal.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/jogl-2.4-b1506-20200306-macosx-universal/jar/jogl-all-noawt-natives-macosx-universal.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/jogl-2.4-b1506-20200306-macosx-universal/jar/jogl-all-noawt.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/jogl-2.4-b1506-20200306-macosx-universal/jar/jogl-all.jar!/" />
+      <root url="file://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/gluegen-2.4-b937-20200306-macosx-universal/jar" />
     </CLASSES>
     <JAVADOC />
     <NATIVE>
       <root url="file:///Program Files/Java/Java3D/1.5.1/bin" />
     </NATIVE>
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/gluegen-2.4-b937-20200306-macosx-universal/gluegen-java-src" />
+      <root url="file://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/jogl-2.4-b1506-20200306-macosx-universal" />
+      <root url="file://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/jogl-2.4-b1506-20200306-macosx-universal/jogl-java-src" />
+    </SOURCES>
+    <jarDirectory url="file://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/gluegen-2.4-b937-20200306-macosx-universal/jar" recursive="false" />
+    <jarDirectory url="file://$USER_HOME$/Desktop/java3d-1_5_1-macosx/lib/ext/jogl-2.4-b1506-20200306-macosx-universal" recursive="false" type="SOURCES" />
   </library>
 </component>

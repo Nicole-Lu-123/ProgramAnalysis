@@ -14,8 +14,8 @@ public class Main {
 //        String oldpath = "C:\\Users\\liuce\\Desktop\\cpsc410_project1_team16(1)\\DSL-photoeditor\\src";
 //        String newpath = "C:\\Users\\liuce\\Desktop\\cpsc410_project1_team16-master(2)\\DSL-photoeditor\\src";
 //        //File file1 = new File("C:\\cpsc410_project1_team16-master\\DSL-photoeditor\\src");
-        String oldpath = "/Users/difeisu/Desktop/cpsc410_project1_team16-master/DSL-photoeditor/src";
-        String newpath = "/Users/difeisu/Desktop/cpsc410_project1_team16-master/DSL-photoeditor/src";
+        String oldpath = "/Users/difeisu/Desktop/cpsc410_project1_team161/DSL-photoeditor/src";
+        String newpath = "/Users/difeisu/Desktop/cpsc410_project1_team162/DSL-photoeditor/src";
         File file1 = new File(oldpath);
         CombineInfo cbi1 = new CombineInfo(file1.getPath());
 

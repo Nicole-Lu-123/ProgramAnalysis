@@ -1,12 +1,11 @@
 package com.mycompany;
 
 import Compare.Compare;
-import Scanner.SetOfName;
 import com.mycompany.app.CombineInfo;
+import com.sun.j3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
 import com.sun.j3d.utils.geometry.Box;
-import com.sun.j3d.utils.geometry.Cylinder;
 import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.image.TextureLoader;
 import com.sun.j3d.utils.universe.SimpleUniverse;
@@ -95,7 +94,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         classdependinfo = cbi1.getdependmap();
         classLoopMethodinfo = cbi1.getClassLoopinfo();
         classNum = classmethodinfo.size();
-        System.out.println("Number of class of 1st commit: " + classNum);
+        System.out.println("XXXXXXXXXXXXXNumber of class of 1st commit: " + classLoopMethodinfo);
     }
 
     private void set_up2(CombineInfo cbi2) {
@@ -105,7 +104,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         classdependinfo2 = cbi2.getdependmap();
         classLoopMethodinfo2 = cbi2.getClassLoopinfo();
         classNum2 = classmethodinfo2.size();
-        System.out.println("Number of class of 2nd commit: " + classNum2);
+        System.out.println("YYYYYYYYYYYYNumber of class of 2nd commit: " + classLoopMethodinfo2);
     }
 
 
@@ -121,6 +120,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         addDep = compare.adddep();
         deleteDep = compare.removedep();
     }
+
 
     public BranchGroup createSceneGraph() {
         TransformGroup tg = new TransformGroup();
@@ -142,6 +142,26 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         tg.setTransform(move);
         tg.addChild(bg);
         rootBranchGroup.addChild(moveGroup);
+
+        //view
+
+        transformGroup = universe.getViewingPlatform().getViewPlatformTransform();
+        universe.getViewer().getView().setDepthBufferFreezeTransparent(false);
+
+        KeyNavigatorBehavior keyNavigator = new KeyNavigatorBehavior(transformGroup);
+        keyNavigator.setSchedulingBounds(bound);
+//        PlatformGeometry platformGeometry = new PlatformGeometry();
+//        platformGeometry.addChild(keyNavigator);
+//        universe.getViewingPlatform().setPlatformGeometry(platformGeometry);
+        BranchGroup branchGroup = new BranchGroup();
+        branchGroup.addChild(keyNavigator);
+        universe.addBranchGraph(branchGroup);
+
+        rootBranchGroup.addChild(createViewGraph());
+//        rootBranchGroup.addChild(createSatellite());
+
+
+
 
         // set light source
         Color3f lightColor = new Color3f(1.0f, 1.0f, 0.9f);
@@ -165,6 +185,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
             float zrandom = randomFloatOne();
             addNewSphere(className, 0.05f, xrandom, yrandom, zrandom);
         }
+
 
         // draw lines
         if (!classextendinfo.isEmpty()) {
@@ -192,6 +213,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
             });
         }
 
+
         // newly added relation of classes
         addExtend.forEach((className, classList) -> {
             for (String s : classList) {
@@ -217,11 +239,50 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         System.out.println("Class function calls:");
         System.out.println(classdependinfo2);
 
-        SetOfName son = new SetOfName();
-        System.out.println(son.getMethodWhichhasLoop());
+
+        System.out.println();
 
         rootBranchGroup.compile();
         return rootBranchGroup;
+    }
+
+    public BranchGroup createViewGraph() {
+        BranchGroup viewgroup = new BranchGroup();
+        transformGroup = new TransformGroup();
+
+        view = new MovingView();
+        transformGroup.addChild(view);
+
+        viewgroup.addChild(transformGroup);
+
+        DirectionalLight directionalLight = new DirectionalLight(true, new Color3f(-0.5f,0.5f,1.0f), new Vector3f(-0.5f, 0.5f, 0.0f));
+
+        directionalLight.setInfluencingBounds(new BoundingSphere(new Point3d(), 10000.0));
+
+        viewgroup.addChild(directionalLight);
+
+        viewgroup.compile();
+        return viewgroup;
+
+
+
+
+//        Integer viewNumber = 4;
+//        Canvas3D[] canvas3D = new Canvas3D[viewNumber];
+//        String viewOption[] = {"Front View", "Side View", "Plan View", "Zoom Out View"};
+//        TransformGroup viewPointPlatform;
+////        viewManager = new ViewManager(this, 1, 2);
+//        BranchGroup view1 = new BranchGroup();
+//        TransformGroup transformGroup = new TransformGroup();
+//        view1.addChild(transformGroup);
+//        GraphicsConfiguration configuration = SimpleUniverse.getPreferredConfiguration();
+//        for(int i = 0; i < viewNumber; i++) {
+//            canvas3D[i] = new Canvas3D(configuration);
+//            viewPointPlatform = createViewPointPlatform(canvas3D[i], i);
+//            transformGroup.addChild(viewPointPlatform);
+//        }
+//        return view1;
+
     }
 
 
@@ -239,7 +300,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         // set location of sphere at (x,y,z) in the scene
         transform.setTranslation(new Vector3f(x, y, z));
         tg.setTransform(transform);
-        tg.addChild(sphere);
+//        tg.addChild(sphere);
         rootBranchGroup.addChild(tg);
         allowMouseRotateTranslate(tg);
         // add class name under the planet
@@ -269,6 +330,17 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
             float zrandom = randomFloat(3 * radius, -3 * radius, radius);
             addNewCube(x + xrandom, y + yrandom, z + zrandom, randomcolor, className, method);
         }
+
+//        for (String loop: classLoopMethodinfo.keySet()) {
+//            float xrandom = randomFloat(3 * radius, -3 * radius, radius);
+//            float yrandom = randomFloat(3 * radius, -3 * radius, radius);
+//            float zrandom = randomFloat(3 * radius, -3 * radius, radius);
+//            createSatellite();
+//        }
+
+//        for (String loop: classLoopMethodinfo.get(loop)) {
+//
+//        }
     }
 
     // draw a line between two planets(classes)
@@ -357,21 +429,56 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
     }
 
     public void addSphere(String className, float radius, float x, float y, float z) {
+
+//        float xrand = randomFloat( radius, -1 * radius, radius);
+//        float yrand = randomFloat(radius, -1 * radius, radius);
+//        float zrand = randomFloat(radius, -1 * radius, radius);
+//
+//
         Material mat = new Material();
         Appearance app = new Appearance();
         mat.setDiffuseColor(new Color3f(0.0f, 0.5f, 1.0f)); // color: baby blue
         app.setMaterial(mat);
-
-        Sphere sphere = new Sphere(radius);
-        sphere.setAppearance(app);
+//
+//        Sphere sphere = new Sphere(radius,app);
+////        sphere.setAppearance(app);
+//        TransformGroup tg = new TransformGroup();
+//        Transform3D transform = new Transform3D();
+//        // set location of sphere at (x,y,z) in the scene
+//        transform.setTranslation(new Vector3f(x, y, z));
+//        tg.setTransform(transform);
+//
+//        TransformGroup tg_loop = new TransformGroup();
+//        tg_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+//        tg_loop.addChild(sphere);
+////        tg.addChild(sphere);
+//        //
+//        TransformGroup tg2 = new TransformGroup();
+//        Transform3D t3d = new Transform3D();
+//
+//        t3d.setTranslation(new Vector3d(x+ xrand, y+yrand, z+zrand));
+//        t3d.setRotation(new AxisAngle4f(0.0f, 1.0f, 0.0f, 3.0f));
+//        t3d.setScale(0.1);
+//
+//        tg2.setTransform(t3d);
+//
+//        TransformGroup tg2_loop = new TransformGroup();
+//
+//        Appearance appearance = setupAppearance(new Color3f(0.5f, 0.5f, 0.5f));
+//        tg2_loop.addChild(new Sphere(0.3f, appearance));
+//        tg2_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+//        tg2_loop.addChild(rotation(tg2_loop, 300L));
+//
+//        tg2.addChild(tg2_loop);
+//        tg_loop.addChild(tg2);
+//        tg.addChild(tg_loop);
+//        tg.addChild(tg2);
+        //
         TransformGroup tg = new TransformGroup();
-        Transform3D transform = new Transform3D();
-        // set location of sphere at (x,y,z) in the scene
-        transform.setTranslation(new Vector3f(x, y, z));
-        tg.setTransform(transform);
-        tg.addChild(sphere);
-        rootBranchGroup.addChild(tg);
-        allowMouseRotateTranslate(tg);
+
+        BranchGroup tg1 = createSatellite(radius, x, y, z);
+        rootBranchGroup.addChild(tg1);
+//        allowMouseRotateTranslate(tg);
         // add class name under the planet
         addText(className, x, y, z);
         // map to track the location of the sphere(class)
@@ -416,6 +523,33 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
             }
         }
 
+        rootBranchGroup.addChild(tg);
+
+        // for each keyset of forloop, create a sphere
+//        if (classLoopMethodinfo.containsKey(className)) {
+//            System.out.println("0000000000");
+//            for (String loop: classLoopMethodinfo.keySet()) {
+//                float xrandom = randomFloat(3 * radius, -3 * radius, radius);
+//                float yrandom = randomFloat(3 * radius, -3 * radius, radius);
+//                float zrandom = randomFloat(3 * radius, -3 * radius, radius);
+//                System.out.println(loop.toString());
+////                createSatellite();
+//                TransformGroup transformGroup = new TransformGroup();
+//                transform3D = new Transform3D();
+//
+//                transform3D.setTranslation( new Vector3d(x + xrandom, y + yrandom, z + zrandom));
+//                transform3D.setRotation(new AxisAngle4f(0.0f, 0.5f, 0.0f, 3.0f));
+//                transform3D.setScale(0.5);
+//
+//                transformGroup.setTransform(transform3D);
+//
+//                Appearance ap = setupAppearance(new Color3f(0.0f, 2.0f, 0.6f));
+//
+//
+//                rootBranchGroup.addChild(transformGroup);
+//            }
+//        }
+
 
     }
 
@@ -433,6 +567,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         transform.setTranslation(new Vector3f(xpos, ypos, zpos));
         tg.setTransform(transform);
         tg.addChild(b);
+//        tg.addChild(rotation(tg, 100L));
         //cuberoate.addChild(tg);
         rootBranchGroup.addChild(tg);
 
@@ -583,50 +718,134 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         rootBranchGroup.addChild(myMouseTranslate);
     }
 
-    public BranchGroup createSatellite() {
-        BranchGroup branchGroup = new BranchGroup();
-        TransformGroup transformGroup = new TransformGroup();
+    public BranchGroup createSatellite( float radius, float x, float y, float z) {
+//        BranchGroup branchGroup = new BranchGroup();
+//        TransformGroup transformGroup = new TransformGroup();
+//        Transform3D transform3D = new Transform3D();
+//
+//        transformGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+//
+//        transform3D.setTranslation(new Vector3d(0.0, 0.0, -15.0));
+//        transformGroup.setTransform(transform3D);
+//
+//
+//
+//        TransformGroup satellite_body = new TransformGroup();
+//        Transform3D body3D = new Transform3D();
+//
+//        body3D.setTranslation(new Vector3d(0.0, 0.0, 0.0));
+//        satellite_body.setTransform(body3D);
+//
+////
+//        Appearance ap = new Appearance();
+//        Material material = new Material();
+//        material.setDiffuseColor(new Color3f(0.0f, 0.5f, 0.5f));
+//        ap.setMaterial(material);
+//        satellite_body.addChild(new Sphere(1.0f, ap));
+//        satellite_body.addChild(rotation(satellite_body, 1000L));
+//
+//
+//        transformGroup.addChild(satellite_body);
+//
+//
+//        transformGroup.setTransform(transform3D);
+//
+//        DirectionalLight directionalLight = new DirectionalLight(true, new Color3f(-0.5f,0.5f,1.0f), new Vector3f(-0.5f, 0.5f, 0.0f));
+//
+//        directionalLight.setInfluencingBounds(new BoundingSphere(new Point3d(), 10000.0));
+//
+//        branchGroup.addChild(directionalLight);
+//
+//        branchGroup.addChild(transformGroup);
+//
+//        branchGroup.compile();
+//
+//        return branchGroup;
+        float xrand = randomFloat( radius, -1 * radius, radius);
+        float yrand = randomFloat(radius, -1 * radius, radius);
+        float zrand = randomFloat(radius, -1 * radius, radius);
+
+
+        BranchGroup group = new BranchGroup();
+        TransformGroup tg = new TransformGroup();
         Transform3D transform3D = new Transform3D();
 
-        transformGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+        transform3D.setTranslation(new Vector3d(x, y, z));
+        transform3D.setRotation(new AxisAngle4f(0.0f, 0.0f, 0.0f, 0.0f));
+        transform3D.setScale(1.0);
 
-        transform3D.setTranslation(new Vector3d(0.0, 0.0, -15.0));
-        transformGroup.setTransform(transform3D);
+        tg.setTransform(transform3D);
 
-
-
-        TransformGroup satellite_body = new TransformGroup();
-        Transform3D body3D = new Transform3D();
-
-        body3D.setTranslation(new Vector3d(0.0, 0.0, 0.0));
-        satellite_body.setTransform(body3D);
-
-//        Appearance ap_cy = createAppearance(new Color3f(1.0f, 0.3f, 0.0f));
-        satellite_body.addChild(new Cylinder(1.0f, 1.0f, new Appearance()));
+        TransformGroup tg_loop = new TransformGroup();
 
 
-        transformGroup.addChild(satellite_body);
+        Appearance ap = setupAppearance(new Color3f(0.0f, 0.0f, 0.5f));
+        tg_loop.addChild(new Sphere(radius, ap));
+
+        tg_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
+        tg_loop.addChild(rotation(tg_loop, 10000L));
+
+        TransformGroup tg2 = new TransformGroup();
+        Transform3D tg2_3d = new Transform3D();
+
+        tg2_3d.setTranslation(new Vector3d(x+ xrand, y+yrand, z+zrand));
+        tg2_3d.setRotation(new AxisAngle4f(1.0f, 1.0f, 1.0f, 3.0f));
+        tg2_3d.setScale(0.1);
+
+        tg2.setTransform(tg2_3d);
+
+        TransformGroup tg2_loop = new TransformGroup();
+
+        Appearance ap_2 = setupAppearance(new Color3f(0.0f, 1.0f, 0.0f));
+        tg2_loop.addChild(new Sphere(0.5f, ap_2));
+
+        tg2_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
+        tg2_loop.addChild(rotation(tg2_loop, 3000L));
+
+        tg_loop.addChild(setupLight(6.0f, 1.0f, 1.0f, -0.3f, -0.2f, -1.0f));
+
+        tg2_loop.addChild(setupLight(10.7f, 0.7f, 5.0f, -0.3f, -0.2f, 1.0f));
 
 
+        tg2.addChild(tg2_loop);
+
+        tg_loop.addChild(tg2);
+
+        tg.addChild(tg_loop);
 
 
+        group.addChild(tg);
 
 
-        transformGroup.setTransform(transform3D);
+        group.compile();
 
-        DirectionalLight directionalLight = new DirectionalLight(true, new Color3f(-0.5f,0.5f,1.0f), new Vector3f(-0.5f, 0.5f, 0.0f));
-
-        directionalLight.setInfluencingBounds(new BoundingSphere(new Point3d(), 10000.0));
-
-        branchGroup.addChild(directionalLight);
-
-        branchGroup.addChild(transformGroup);
-
-        branchGroup.compile();
-
-        return branchGroup;
+        return group;
 
 
+    }
+
+    private Appearance setupAppearance(Color3f a) {
+        Appearance ap = new Appearance();
+        Material material = new Material();
+        material.setDiffuseColor(a);
+        ap.setMaterial(material);
+        return ap;
+    }
+
+    private Light setupLight(float a, float b, float c, float d, float e, float g) {
+        DirectionalLight light = new DirectionalLight(true, new Color3f(a,b,c), new Vector3f(d,e,g));
+        light.setInfluencingBounds(new BoundingSphere(new Point3d(), 10000.0));
+        return light;
+    }
+
+    public RotationInterpolator rotation(TransformGroup transformGroup, long time) {
+        Alpha alpha = new Alpha(-1, time);
+        RotationInterpolator rotationInterpolator = new RotationInterpolator(alpha, transformGroup);
+        rotationInterpolator.setSchedulingBounds(bound);
+
+        return rotationInterpolator;
     }
 
 
