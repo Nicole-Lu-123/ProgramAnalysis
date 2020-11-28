@@ -1,34 +1,34 @@
 package com.mycompany;
 
-import java.applet.Applet;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import javax.media.j3d.*;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3d;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-
 import Compare.Compare;
 import Scanner.SetOfName;
 import com.mycompany.app.CombineInfo;
-import com.sun.j3d.utils.applet.MainFrame;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
 import com.sun.j3d.utils.geometry.Box;
+import com.sun.j3d.utils.geometry.Cylinder;
 import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.image.TextureLoader;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
-public class BasicSimpleUniverse extends Applet {
+import javax.media.j3d.*;
+import javax.vecmath.*;
+import java.applet.Applet;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.List;
+import java.util.*;
+
+public class BasicSimpleUniverse extends Applet implements ActionListener, KeyListener {
     public SimpleUniverse universe;
     public BranchGroup rootBranchGroup;
     public BoundingSphere bound;
+    public TransformGroup transformGroup;
+    public Transform3D transform3D = new Transform3D();
+    public MovingView view;
 
     public Map<String, List<String>> classmethodinfo;
     public Map<String, List<String>> classextendinfo;
@@ -75,11 +75,16 @@ public class BasicSimpleUniverse extends Applet {
         canvas.setSize(700, 700);
         rootBranchGroup = new BranchGroup();
         add("Center", canvas);
-        BranchGroup scene = createSceneGraph();
+//        BranchGroup scene = createSceneGraph();
 
         universe = new SimpleUniverse(canvas);
         universe.getViewingPlatform().setNominalViewingTransform();
-        universe.addBranchGraph(scene);
+
+        universe.getViewer().getView().setBackClipDistance(300.0);
+
+        canvas.addKeyListener(this);
+
+        universe.addBranchGraph(createSceneGraph());
 
     }
 
@@ -578,4 +583,100 @@ public class BasicSimpleUniverse extends Applet {
         rootBranchGroup.addChild(myMouseTranslate);
     }
 
+    public BranchGroup createSatellite() {
+        BranchGroup branchGroup = new BranchGroup();
+        TransformGroup transformGroup = new TransformGroup();
+        Transform3D transform3D = new Transform3D();
+
+        transformGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
+        transform3D.setTranslation(new Vector3d(0.0, 0.0, -15.0));
+        transformGroup.setTransform(transform3D);
+
+
+
+        TransformGroup satellite_body = new TransformGroup();
+        Transform3D body3D = new Transform3D();
+
+        body3D.setTranslation(new Vector3d(0.0, 0.0, 0.0));
+        satellite_body.setTransform(body3D);
+
+//        Appearance ap_cy = createAppearance(new Color3f(1.0f, 0.3f, 0.0f));
+        satellite_body.addChild(new Cylinder(1.0f, 1.0f, new Appearance()));
+
+
+        transformGroup.addChild(satellite_body);
+
+
+
+
+
+
+        transformGroup.setTransform(transform3D);
+
+        DirectionalLight directionalLight = new DirectionalLight(true, new Color3f(-0.5f,0.5f,1.0f), new Vector3f(-0.5f, 0.5f, 0.0f));
+
+        directionalLight.setInfluencingBounds(new BoundingSphere(new Point3d(), 10000.0));
+
+        branchGroup.addChild(directionalLight);
+
+        branchGroup.addChild(transformGroup);
+
+        branchGroup.compile();
+
+        return branchGroup;
+
+
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
+    class MovingView extends Behavior {
+
+        private Transform3D transform3D = new Transform3D();
+        private WakeupOnElapsedFrames moveFrame = null;
+
+        public MovingView() {
+
+            BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 1000.0);
+            this.setSchedulingBounds(bounds);
+        }
+
+        public void initialize() {
+            moveFrame = new WakeupOnElapsedFrames(0);
+            wakeupOn(moveFrame);
+        }
+
+        @Override
+//    public void processStimulus(Enumeration enumeration) {
+//
+//    }
+
+        public void processStimulus(Enumeration criteria) {
+            transform3D.set(new Vector3d(0.0, 0.0, -0.1f));
+            transformGroup.getTransform(transform3D);
+            transform3D.mul(transform3D);
+            transformGroup.setTransform(transform3D);
+
+            wakeupOn(moveFrame);
+        }
+    }
 }
