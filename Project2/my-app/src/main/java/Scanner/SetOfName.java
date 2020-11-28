@@ -22,4 +22,8 @@ public class SetOfName extends VoidVisitorAdapter<List<String>> {
             System.out.println("contain for loop? " + str1);
         }
     }
+
+    public List<String> getMethodWhichhasLoop() {
+        return MethodWhichhasLoop;
+    }
 }
