@@ -6,29 +6,35 @@ import com.sun.j3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
 import com.sun.j3d.utils.geometry.Box;
+import com.sun.j3d.utils.geometry.Primitive;
 import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.image.TextureLoader;
+import com.sun.j3d.utils.picking.PickCanvas;
+import com.sun.j3d.utils.picking.PickResult;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
 import javax.media.j3d.*;
 import javax.vecmath.*;
 import java.applet.Applet;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
-public class BasicSimpleUniverse extends Applet implements ActionListener, KeyListener {
+public class BasicSimpleUniverse extends Applet implements MouseListener, ActionListener, KeyListener {
     public SimpleUniverse universe;
     public BranchGroup rootBranchGroup;
+    public BranchGroup classBranchGroup;
     public BoundingSphere bound;
     public TransformGroup transformGroup;
     public Transform3D transform3D = new Transform3D();
     public MovingView view;
     public Integer counter = 0;
+    public Canvas3D canvas = null;
+    public PickCanvas pick = null;
+    private Shape3D quad3D;
 
     public Map<String, List<String>> classmethodinfo;
     public Map<String, List<String>> classextendinfo;
@@ -40,6 +46,8 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
     public Map<String, List<String>> classimpleinfo2;
     public Map<String, List<String>> classdependinfo2;
     public Map<String, List<String>> classLoopMethodinfo2;
+    public Map<String, List<String>> class1;
+    public Map<String, List<String>> class2;
     public List<String> addClass;
     public List<String> deleteClass;
     public Map<String, List<String>> addMethod;
@@ -52,18 +60,25 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
     public Map<String, List<String>> deleteDep;
     public int classNum;
     public int classNum2;
+    public CombineInfo cb1;
+    public CombineInfo cb2;
 
     public HashMap<String, Point3f> classLocMap = new HashMap();
+    public HashMap<String, String> classInfoMap = new HashMap<>();
 
 
     public static final Color3f BLACK = new Color3f(0.0f, 0.0f, 0.0f);
     public static final Color3f WHITE = new Color3f(1.0f, 1.0f, 1.0f);
+    private HashMap<String, Point2d> classCoorDinate = new HashMap<>();
 
 //    public static void main(String[] args){
 //        new MainFrame(new BasicSimpleUniverse(cbi1), 700, 700);
 //    }
 
-    public BasicSimpleUniverse(CombineInfo cbi1, CombineInfo cbi2, Compare compare) {
+    public BasicSimpleUniverse(CombineInfo cbi1, CombineInfo cbi2, Compare compare, File f1, File f2) throws IOException {
+        cb1 = new CombineInfo(f1.getPath());
+        cb2 = new CombineInfo(f2.getPath());
+
         set_up(cbi1);
         set_up2(cbi2);
         set_up(compare);
@@ -71,7 +86,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
 
         setLayout(new BorderLayout());
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
-        Canvas3D canvas = new Canvas3D(config);
+        canvas = new Canvas3D(config);
         canvas.setSize(700, 700);
         rootBranchGroup = new BranchGroup();
         add("Center", canvas);
@@ -82,11 +97,28 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
 
         universe.getViewer().getView().setBackClipDistance(300.0);
 
+
+        pick = new PickCanvas(canvas, rootBranchGroup);
+
+        pick.setMode(PickCanvas.BOUNDS);
+
+
+
         canvas.addKeyListener(this);
+        canvas.addMouseListener(this);
 
         universe.addBranchGraph(createSceneGraph());
 
     }
+
+    private void grab1(String classname, CombineInfo cbi1) {
+        classInfoMap.put(classname, cbi1.getAllClassInfo(classname));
+    }
+
+    private void grab2(String classname, CombineInfo cbi2) {
+        classInfoMap.put(classname, cbi2.getAllClassInfo(classname));
+    }
+
 
     private void set_up(CombineInfo cbi1) {
         classmethodinfo = cbi1.getmethodmap();
@@ -95,6 +127,8 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         classdependinfo = cbi1.getdependmap();
         classLoopMethodinfo = cbi1.getClassLoopinfo();
         classNum = classmethodinfo.size();
+
+
         System.out.println("XXXXXXXXXXXXXNumber of class of 1st commit: " + classLoopMethodinfo);
     }
 
@@ -303,12 +337,24 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         tg.setTransform(transform);
 //        tg.addChild(sphere);
         rootBranchGroup.addChild(tg);
+//        classBranchGroup.addChild(tg);
         allowMouseRotateTranslate(tg);
         // add class name under the planet
         addText(className, x, y, z);
         // map to track the location of the sphere(class)
-        classLocMap.put(className, new Point3f(x, y, z));
 
+        classLocMap.put(className, new Point3f(x, y, z));
+        classCoorDinate.put(className, new Point2d(x, y));
+        System.out.println("OOOR222" + classCoorDinate.toString());
+
+        classInfoMap.put(className, cb2.getAllClassInfo(className));
+
+        System.out.println("CCCC22222" + classInfoMap.toString());
+
+//        classInfoMap.put(className, )
+
+
+        System.out.println("CCCCCCC" + classLocMap.toString());
         TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
         transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
         transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
@@ -332,16 +378,6 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
             addNewCube(x + xrandom, y + yrandom, z + zrandom, randomcolor, className, method);
         }
 
-//        for (String loop: classLoopMethodinfo.keySet()) {
-//            float xrandom = randomFloat(3 * radius, -3 * radius, radius);
-//            float yrandom = randomFloat(3 * radius, -3 * radius, radius);
-//            float zrandom = randomFloat(3 * radius, -3 * radius, radius);
-//            createSatellite();
-//        }
-
-//        for (String loop: classLoopMethodinfo.get(loop)) {
-//
-//        }
     }
 
     // draw a line between two planets(classes)
@@ -481,12 +517,18 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
 //        BranchGroup tg1 = createSatellite(radius, x, y, z);
 //        rootBranchGroup.addChild(tg1);
         rootBranchGroup.addChild(tg);
+//        classBranchGroup.addChild(tg);
 
         allowMouseRotateTranslate(tg);
         // add class name under the planet
         addText(className, x, y, z);
         // map to track the location of the sphere(class)
         classLocMap.put(className, new Point3f(x, y, z));
+        classCoorDinate.put(className, new Point2d(x, y));
+        System.out.println("OOOR111" + classCoorDinate.toString());
+
+        classInfoMap.put(className, cb1.getAllClassInfo(className));
+        System.out.println("CCCC111" + classInfoMap.toString());
 
         // if the class is deleted at next commit, then sphere will keep blinking
         if (deleteClass.contains(className)) {
@@ -827,27 +869,27 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
 
         tg_loop.addChild(rotation(tg_loop, 100L));
 
-        TransformGroup tg2 = new TransformGroup();
-        Transform3D tg2_3d = new Transform3D();
+//        TransformGroup tg2 = new TransformGroup();
+//        Transform3D tg2_3d = new Transform3D();
+//
+//        tg2_3d.setTranslation(new Vector3d(x+ xrand, y+yrand, z+zrand));
+//        tg2_3d.setRotation(new AxisAngle4f(1.0f, 1.0f, 1.0f, 3.0f));
+//        tg2_3d.setScale(0.1);
+//
+//        tg2.setTransform(tg2_3d);
+//
+//        TransformGroup tg2_loop = new TransformGroup();
+//
+//        Appearance ap_2 = setupAppearance(new Color3f(0.0f, 1.0f, 0.0f));
+//        tg2_loop.addChild(new Sphere(0.5f, ap_2));
+//
+//        tg2_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 
-        tg2_3d.setTranslation(new Vector3d(x+ xrand, y+yrand, z+zrand));
-        tg2_3d.setRotation(new AxisAngle4f(1.0f, 1.0f, 1.0f, 3.0f));
-        tg2_3d.setScale(0.1);
-
-        tg2.setTransform(tg2_3d);
-
-        TransformGroup tg2_loop = new TransformGroup();
-
-        Appearance ap_2 = setupAppearance(new Color3f(0.0f, 1.0f, 0.0f));
-        tg2_loop.addChild(new Sphere(0.5f, ap_2));
-
-        tg2_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-
-        tg2_loop.addChild(rotation(tg2_loop, 3000L));
+//        tg2_loop.addChild(rotation(tg2_loop, 3000L));
 
         tg_loop.addChild(setupLight(0.0f, 0.0f, 0.0f, -0.3f, -0.2f, -1.0f));
 
-        tg2_loop.addChild(setupLight(10.7f, 0.7f, 5.0f, -0.3f, -0.2f, 1.0f));
+//        tg2_loop.addChild(setupLight(10.7f, 0.7f, 5.0f, -0.3f, -0.2f, 1.0f));
 
 
 //        tg2.addChild(tg2_loop);
@@ -903,6 +945,35 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         return rotationInterpolator;
     }
 
+    public BranchGroup setupPick() {
+        BranchGroup branchGroup = new BranchGroup();
+        pick = new PickCanvas(canvas, branchGroup);
+        TransformGroup transformGroup = new TransformGroup();
+        Transform3D transform3D = new Transform3D();
+
+        transform3D.setTranslation(new Vector3d(0.0, 0.0, 0.0));
+        transform3D.setScale(1.0);
+        transformGroup.setTransform(transform3D);
+
+//        branchGroup.addChild(createShape3D("Hello", 0.0, -0.47, 0.40f, 0.52f));
+
+        branchGroup.compile();
+
+        return branchGroup;
+
+
+
+
+
+
+
+
+//        transformGroup.addChild(new Text2D());
+//        return null;
+    }
+
+
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -923,6 +994,48 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
     public void keyReleased(KeyEvent e) {
 
     }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        System.out.println(e.getLocationOnScreen().toString());
+
+        pick.setShapeLocation(e);
+        PickResult result = pick.pickClosest();
+
+        if (result != null) {
+            Shape3D s = (Shape3D) result.getNode(PickResult.SHAPE3D);
+            Primitive node1 = (Primitive) result.getNode(PickResult.PRIMITIVE);
+            String shapeID = s.getClass().getName();
+            String primId = node1.getClass().getName();
+            System.out.println(shapeID);
+            System.out.println(primId);
+        }
+
+//        Texture2D texture2D = null;
+//        texture2D.setUserData();
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
     class MovingView extends Behavior {
 
         private Transform3D transform3D = new Transform3D();

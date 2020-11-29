@@ -79,5 +79,17 @@ public class CombineInfo {
     public Map<String, List<String>> getClassLoopinfo() {
         return classLoopinfo;
     }
+    public String getAllClassInfo(String className){
+        String result = "";
+        List<String> methods = classmethodinfo.get(className);
+        result += "Methods: " + methods + "\n";
+        result += "Extend Classes: " + classdependinfo.get(className) + "\n";
+        result += "Implement Classes: " + classimpleinfo.get(className) + "\n";
+        result += "Call functions in Classes: " + classdependinfo.get(className) + "\n";
+        result += "Which method have for-loops: " + classLoopinfo.get(className) + "\n";
+        return result;
+    }
+
+
 
 }

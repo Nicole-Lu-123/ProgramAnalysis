@@ -56,8 +56,12 @@ public class Main {
 
 
         // visualization
-        new MainFrame(new BasicSimpleUniverse(cbi1, cbi2, compare), 700, 700);
+        new MainFrame(new BasicSimpleUniverse(cbi1, cbi2, compare, file1, file2), 700, 700);
     }
+
+
+
+
 
 
 }
