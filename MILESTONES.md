@@ -142,3 +142,10 @@ We planned to conduct our final user study to another 2 person after the impleme
  
 
 
+-User study1
+  -The user thinks our 3D visualization is awesome, especially the shined items and zoom in/out operations.  After explaining, the user knows what the different lines represent and cubes are methods, he thinks the program can show the changes between two commits including classes, methods and the relationships between classes which is good. Althogh the idea to show these is novel,  the information showed is not really rich and acceptable, it will be better if there is a text to show the information about classes, including methods names, add/delete methods and the number of changed methods. 
+
+-User study2
+  -The user can understand the visualization after we explained about how the objects in the java3D represents the project. 
+  -It hard to observe the changes if the object is out of scene.(Change: we add the functional key listenser to allow the user to c    ontrol the viewpoint of the final scene by using four arrow keys: "up" "down" "left" and "right")
+  -The information is not so clear. (Change:  When the user click on the sphere, the window will present all the class information we  analysed on the pop-up window.)
