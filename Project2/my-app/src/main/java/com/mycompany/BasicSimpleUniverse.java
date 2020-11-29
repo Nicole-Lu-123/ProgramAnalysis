@@ -28,6 +28,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
     public TransformGroup transformGroup;
     public Transform3D transform3D = new Transform3D();
     public MovingView view;
+    public Integer counter = 0;
 
     public Map<String, List<String>> classmethodinfo;
     public Map<String, List<String>> classextendinfo;
@@ -104,7 +105,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         classdependinfo2 = cbi2.getdependmap();
         classLoopMethodinfo2 = cbi2.getClassLoopinfo();
         classNum2 = classmethodinfo2.size();
-        System.out.println("YYYYYYYYYYYYNumber of class of 2nd commit: " + classLoopMethodinfo2);
+        System.out.println("YYYYYYYYYYYYNumber of class of 2nd commit: " + classLoopMethodinfo2.get("PhotoeditorEvaluator").size());
     }
 
 
@@ -440,18 +441,18 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         mat.setDiffuseColor(new Color3f(0.0f, 0.5f, 1.0f)); // color: baby blue
         app.setMaterial(mat);
 //
-//        Sphere sphere = new Sphere(radius,app);
-////        sphere.setAppearance(app);
-//        TransformGroup tg = new TransformGroup();
-//        Transform3D transform = new Transform3D();
+        Sphere sphere = new Sphere(radius,app);
+        sphere.setAppearance(app);
+        TransformGroup tg = new TransformGroup();
+        Transform3D transform = new Transform3D();
 //        // set location of sphere at (x,y,z) in the scene
-//        transform.setTranslation(new Vector3f(x, y, z));
-//        tg.setTransform(transform);
+        transform.setTranslation(new Vector3f(x, y, z));
+        tg.setTransform(transform);
 //
 //        TransformGroup tg_loop = new TransformGroup();
 //        tg_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 //        tg_loop.addChild(sphere);
-////        tg.addChild(sphere);
+        tg.addChild(sphere);
 //        //
 //        TransformGroup tg2 = new TransformGroup();
 //        Transform3D t3d = new Transform3D();
@@ -474,11 +475,14 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
 //        tg.addChild(tg_loop);
 //        tg.addChild(tg2);
         //
-        TransformGroup tg = new TransformGroup();
+//        TransformGroup tg = new TransformGroup();
 
-        BranchGroup tg1 = createSatellite(radius, x, y, z);
-        rootBranchGroup.addChild(tg1);
-//        allowMouseRotateTranslate(tg);
+
+//        BranchGroup tg1 = createSatellite(radius, x, y, z);
+//        rootBranchGroup.addChild(tg1);
+        rootBranchGroup.addChild(tg);
+
+        allowMouseRotateTranslate(tg);
         // add class name under the planet
         addText(className, x, y, z);
         // map to track the location of the sphere(class)
@@ -523,7 +527,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
             }
         }
 
-        rootBranchGroup.addChild(tg);
+
 
         // for each keyset of forloop, create a sphere
 //        if (classLoopMethodinfo.containsKey(className)) {
@@ -554,6 +558,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
     }
 
     private void addNewCube(float xpos, float ypos, float zpos, Color3f color, String className, String method) {
+
         Appearance app = new Appearance();
         Material mat = new Material(color, BLACK, color, WHITE, 128.0f);
         //mat.setShininess(100.0f);
@@ -567,9 +572,29 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         transform.setTranslation(new Vector3f(xpos, ypos, zpos));
         tg.setTransform(transform);
         tg.addChild(b);
+//        tg.addChild(rotation(tg, 3000L));
 //        tg.addChild(rotation(tg, 100L));
         //cuberoate.addChild(tg);
-        rootBranchGroup.addChild(tg);
+
+//        List<List<String>> methodList = classLoopMethodinfo2.values().stream().collect(Collectors.toList());
+
+        if (classLoopMethodinfo2.containsKey(className)) {
+            System.out.println("===" + className.toString());
+            if (classLoopMethodinfo2.get(className).contains(method) && counter < classLoopMethodinfo2.get(className).size()) {
+                System.out.println("00000" + className + "---" + method);
+                System.out.println("9999999999");
+                counter++;
+//                transform.setRotation(new AxisAngle4f(1.0f, 1.0f, 1.0f, 3.0f));
+//                tg.addChild(rotation(tg, 3000L));
+                BranchGroup tg1 = createSatellite(l, xpos, ypos, zpos);
+                rootBranchGroup.addChild(tg1);
+
+
+
+            }
+        }
+
+
 
         // the newly added method will blink several times
         TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
@@ -586,6 +611,8 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         transparency1.setSchedulingBounds(bound);
         tg.addChild(transparency1);
 
+
+        rootBranchGroup.addChild(tg);
         allowMouseRotateTranslate(tg);
 
         // objRotate(sub);
@@ -649,9 +676,9 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         Transform3D transform = new Transform3D();
         // set location of sphere at (x,y,z) in the scene
         transform.setTranslation(new Vector3f(xpos, ypos, zpos));
+
         tg.setTransform(transform);
         tg.addChild(b);
-        rootBranchGroup.addChild(tg);
 
         // if the method is deleted in next commit, then the cube will keep blinking
         if (deleteMethod.containsKey(className)) {
@@ -672,6 +699,13 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
             }
         }
 
+        if (classLoopMethodinfo.containsKey(className)) {
+            if (classLoopMethodinfo.get(className).contains(method)) {
+                tg.addChild(rotation(tg, 100L));
+            }
+        }
+
+        rootBranchGroup.addChild(tg);
         allowMouseRotateTranslate(tg);
 
         // if the method has for-loop in the body, then the rotation self rotates
@@ -718,6 +752,9 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         rootBranchGroup.addChild(myMouseTranslate);
     }
 
+
+//    private TransformGroup createMethod()
+
     public BranchGroup createSatellite( float radius, float x, float y, float z) {
 //        BranchGroup branchGroup = new BranchGroup();
 //        TransformGroup transformGroup = new TransformGroup();
@@ -761,6 +798,10 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
 //        branchGroup.compile();
 //
 //        return branchGroup;
+        Appearance app = new Appearance();
+        Material mat = new Material(randomColor3f(), BLACK, randomColor3f(), WHITE, 128.0f);
+        //mat.setShininess(100.0f);
+        app.setMaterial(mat);
         float xrand = randomFloat( radius, -1 * radius, radius);
         float yrand = randomFloat(radius, -1 * radius, radius);
         float zrand = randomFloat(radius, -1 * radius, radius);
@@ -771,7 +812,7 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         Transform3D transform3D = new Transform3D();
 
         transform3D.setTranslation(new Vector3d(x, y, z));
-        transform3D.setRotation(new AxisAngle4f(0.0f, 0.0f, 0.0f, 0.0f));
+//        transform3D.setRotation(new AxisAngle4f(0.0f, 0.0f, 0.0f, 0.0f));
         transform3D.setScale(1.0);
 
         tg.setTransform(transform3D);
@@ -779,12 +820,12 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
         TransformGroup tg_loop = new TransformGroup();
 
 
-        Appearance ap = setupAppearance(new Color3f(0.0f, 0.0f, 0.5f));
-        tg_loop.addChild(new Sphere(radius, ap));
+        Appearance ap = setupAppearance(new Color3f(0.0f, 0.0f, 1.0f));
+        tg_loop.addChild(new Box(radius, radius, radius, ap));
 
         tg_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 
-        tg_loop.addChild(rotation(tg_loop, 10000L));
+        tg_loop.addChild(rotation(tg_loop, 100L));
 
         TransformGroup tg2 = new TransformGroup();
         Transform3D tg2_3d = new Transform3D();
@@ -804,16 +845,30 @@ public class BasicSimpleUniverse extends Applet implements ActionListener, KeyLi
 
         tg2_loop.addChild(rotation(tg2_loop, 3000L));
 
-        tg_loop.addChild(setupLight(6.0f, 1.0f, 1.0f, -0.3f, -0.2f, -1.0f));
+        tg_loop.addChild(setupLight(0.0f, 0.0f, 0.0f, -0.3f, -0.2f, -1.0f));
 
         tg2_loop.addChild(setupLight(10.7f, 0.7f, 5.0f, -0.3f, -0.2f, 1.0f));
 
 
-        tg2.addChild(tg2_loop);
-
-        tg_loop.addChild(tg2);
+//        tg2.addChild(tg2_loop);
+//
+//        tg_loop.addChild(tg2);
 
         tg.addChild(tg_loop);
+
+        TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
+        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
+        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
+
+        app.setTransparencyAttributes(transparency);
+        app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
+        app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
+
+        Alpha alpha1 = new Alpha(5, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
+                0, 0, 2000, 0, 0, 2000, 0, 0);
+        TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
+        transparency1.setSchedulingBounds(bound);
+        tg.addChild(transparency1);
 
 
         group.addChild(tg);
