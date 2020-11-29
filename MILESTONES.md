@@ -127,14 +127,18 @@ We planned to conduct our final user study to another 2 person after the impleme
   
   
 - Visualization:
-Sphere: (class)
-blue sphere - class in the first commit
-blue-green sphere - class in the second commit
+  - Sphere: (class)
+  - blue sphere - class in the first commit
+  - blue-green sphere - class in the second commit
+
+  - Cube: (method)
+  - methods in the same class have same color
+
  
-Cube: (method)
-methods in the same class have same color
+  - Line: (dependency)
+  - green - extends
+  - white - implements
+  - blue - function calls in other classes
  
-Line: (dependency)
-green - extends
-white - implements
-blue - function calls in other classes
+
+
