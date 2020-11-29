@@ -26,33 +26,31 @@ public class Main {
         System.out.println("Done first commit analysis!!!");
 
         Compare compare = new Compare(oldpath, newpath);
-        List<String> addclass = compare.compareClass().get(0);
-        List<String> deletclass = compare.compareClass().get(1);
-
+      
         System.out.println("Add class: ");
-        System.out.println(addclass);
+        System.out.println(compare.compareClass().get(0));
         System.out.println("Delete Class: ");
-        System.out.println(deletclass);
+        System.out.println(compare.compareClass().get(1));
 
         System.out.println("Add methods: ");
-        System.out.println(compare.methodAdd());
+        System.out.println(compare.compareMethod().get(0));
         System.out.println("Delete methods: ");
-        System.out.println(compare.methodDelet());
+        System.out.println(compare.compareMethod().get(1));
 
         System.out.println("Add extension: ");
-        System.out.println(compare.addextend());
+        System.out.println(compare.compareExtend().get(0));
         System.out.println("Delete extension: ");
-        System.out.println(compare.removeextend());
+        System.out.println(compare.compareExtend().get(1));
 
         System.out.println("Add implementation: ");
-        System.out.println(compare.addinterface());
+        System.out.println(compare.compareInterface().get(0));
         System.out.println("Delete implementation: ");
-        System.out.println(compare.removeinterface());
+        System.out.println(compare.compareInterface().get(1));
 
         System.out.println("Add dependency: ");
-        System.out.println(compare.adddep());
+        System.out.println(compare.compareDep().get(0));
         System.out.println("Delete dependency: ");
-        System.out.println(compare.removedep());
+        System.out.println(compare.compareDep().get(1));
 
 
         // visualization
