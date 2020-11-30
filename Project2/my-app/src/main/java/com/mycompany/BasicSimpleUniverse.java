@@ -38,7 +38,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
     public Integer counter = 0;
     public Canvas3D canvas = null;
     public PickCanvas pick = null;
-    private Shape3D quad3D;
     private String sensorID = null;
 
     public Map<String, List<String>> classmethodinfo;
@@ -52,8 +51,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
     public Map<String, List<String>> classdependinfo2;
     public Map<String, List<String>> classLoopMethodinfo2;
     public Map<String, String> AllClassInfo = new HashMap<>();
-    public Map<String, List<String>> class1;
-    public Map<String, List<String>> class2;
     public List<String> addClass;
     public List<String> deleteClass;
     public Map<String, List<String>> addMethod;
@@ -95,7 +92,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         canvas.setSize(700, 700);
         rootBranchGroup = new BranchGroup();
         add("Center", canvas);
-//        BranchGroup scene = createSceneGraph();
 
         universe = new SimpleUniverse(canvas);
         universe.getViewingPlatform().setNominalViewingTransform();
@@ -114,15 +110,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
     }
 
-    private void grab1(String classname, CombineInfo cbi1) {
-        classInfoMap.put(classname, cbi1.getAllClassInfo(classname));
-    }
-
-    private void grab2(String classname, CombineInfo cbi2) {
-        classInfoMap.put(classname, cbi2.getAllClassInfo(classname));
-    }
-
-
     private void set_up(CombineInfo cbi1) {
         classmethodinfo = cbi1.getmethodmap();
         classextendinfo = cbi1.getextendmap();
@@ -133,7 +120,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         for(String className: classmethodinfo.keySet()){
             AllClassInfo.put(className, cbi1.getAllClassInfo(className));
         }
-        System.out.println("XXXXXXXXXXXXXNumber of class of 1st commit: " + classLoopMethodinfo);
     }
 
     private void set_up2(CombineInfo cbi2) {
@@ -146,7 +132,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         for(String className: classmethodinfo2.keySet()){
             AllClassInfo.put(className, cbi2.getAllClassInfo(className));
         }
-        System.out.println("YYYYYYYYYYYYNumber of class of 2nd commit: " + classLoopMethodinfo2.get("PhotoeditorEvaluator").size());
     }
 
 
@@ -200,7 +185,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         universe.addBranchGraph(branchGroup);
 
         rootBranchGroup.addChild(createViewGraph());
-//        rootBranchGroup.addChild(createSatellite());
 
         // set light source
         Color3f lightColor = new Color3f(1.0f, 1.0f, 0.9f);
@@ -264,9 +248,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         for (TransformGroup texttg: textTransformGroupList){
             tg.addChild(texttg);
         }
-//        textLocMap.forEach((className,loc) ->{
-//            tg.addChild(createText2D(className, loc));
-//        });
 
 
         objRoot.addChild(tg);
@@ -289,7 +270,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
         Text2D text2d = new Text2D(className, new Color3f(0.9f, 1.0f, 1.0f), "Helvetica", 3, Font.ITALIC);
 
-        // text2d.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 
         text2d.setUserData(className); //!!!
 
@@ -366,23 +346,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         viewgroup.compile();
         return viewgroup;
 
-
-//        Integer viewNumber = 4;
-//        Canvas3D[] canvas3D = new Canvas3D[viewNumber];
-//        String viewOption[] = {"Front View", "Side View", "Plan View", "Zoom Out View"};
-//        TransformGroup viewPointPlatform;
-////        viewManager = new ViewManager(this, 1, 2);
-//        BranchGroup view1 = new BranchGroup();
-//        TransformGroup transformGroup = new TransformGroup();
-//        view1.addChild(transformGroup);
-//        GraphicsConfiguration configuration = SimpleUniverse.getPreferredConfiguration();
-//        for(int i = 0; i < viewNumber; i++) {
-//            canvas3D[i] = new Canvas3D(configuration);
-//            viewPointPlatform = createViewPointPlatform(canvas3D[i], i);
-//            transformGroup.addChild(viewPointPlatform);
-//        }
-//        return view1;
-
     }
 
 
@@ -410,14 +373,10 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
         classLocMap.put(className, new Point3f(x, y, z));
         classCoorDinate.put(className, new Point2d(x, y));
-        System.out.println("OOOR222" + classCoorDinate.toString());
+
 
         classInfoMap.put(className, cb2.getAllClassInfo(className));
 
-        System.out.println("CCCC22222" + classInfoMap.toString());
-
-//        classInfoMap.put(className, )
-        System.out.println("CCCCCCC" + classLocMap.toString());
 
         // sphere blinks several times
         setTransparency(app,tg,5);
@@ -497,10 +456,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
     public void addSphere(String className, float radius, float x, float y, float z) {
 
-//        float xrand = randomFloat( radius, -1 * radius, radius);
-//        float yrand = randomFloat(radius, -1 * radius, radius);
-//        float zrand = randomFloat(radius, -1 * radius, radius);
-//
 //
         Material mat = new Material();
         Appearance app = new Appearance();
@@ -514,40 +469,10 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 //        // set location of sphere at (x,y,z) in the scene
         transform.setTranslation(new Vector3f(x, y, z));
         tg.setTransform(transform);
-//
-//        TransformGroup tg_loop = new TransformGroup();
-//        tg_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-//        tg_loop.addChild(sphere);
+
         tg.addChild(sphere);
-//        //
-//        TransformGroup tg2 = new TransformGroup();
-//        Transform3D t3d = new Transform3D();
-//
-//        t3d.setTranslation(new Vector3d(x+ xrand, y+yrand, z+zrand));
-//        t3d.setRotation(new AxisAngle4f(0.0f, 1.0f, 0.0f, 3.0f));
-//        t3d.setScale(0.1);
-//
-//        tg2.setTransform(t3d);
-//
-//        TransformGroup tg2_loop = new TransformGroup();
-//
-//        Appearance appearance = setupAppearance(new Color3f(0.5f, 0.5f, 0.5f));
-//        tg2_loop.addChild(new Sphere(0.3f, appearance));
-//        tg2_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-//        tg2_loop.addChild(rotation(tg2_loop, 300L));
-//
-//        tg2.addChild(tg2_loop);
-//        tg_loop.addChild(tg2);
-//        tg.addChild(tg_loop);
-//        tg.addChild(tg2);
-        //
-//        TransformGroup tg = new TransformGroup();
 
-
-//        BranchGroup tg1 = createSatellite(radius, x, y, z);
-//        rootBranchGroup.addChild(tg1);
         rootBranchGroup.addChild(tg);
-//        classBranchGroup.addChild(tg);
 
         allowMouseRotateTranslate(tg);
         // add class name under the planet
@@ -555,10 +480,8 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         // map to track the location of the sphere(class)
         classLocMap.put(className, new Point3f(x, y, z));
         classCoorDinate.put(className, new Point2d(x, y));
-        System.out.println("OOOR111" + classCoorDinate.toString());
 
         classInfoMap.put(className, cb1.getAllClassInfo(className));
-        System.out.println("CCCC111" + classInfoMap.toString());
 
         // if the class is deleted at next commit, then sphere will keep blinking
         if (deleteClass.contains(className)) {
@@ -588,32 +511,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
 
 
-        // for each keyset of forloop, create a sphere
-//        if (classLoopMethodinfo.containsKey(className)) {
-//            System.out.println("0000000000");
-//            for (String loop: classLoopMethodinfo.keySet()) {
-//                float xrandom = randomFloat(3 * radius, -3 * radius, radius);
-//                float yrandom = randomFloat(3 * radius, -3 * radius, radius);
-//                float zrandom = randomFloat(3 * radius, -3 * radius, radius);
-//                System.out.println(loop.toString());
-////                createSatellite();
-//                TransformGroup transformGroup = new TransformGroup();
-//                transform3D = new Transform3D();
-//
-//                transform3D.setTranslation( new Vector3d(x + xrandom, y + yrandom, z + zrandom));
-//                transform3D.setRotation(new AxisAngle4f(0.0f, 0.5f, 0.0f, 3.0f));
-//                transform3D.setScale(0.5);
-//
-//                transformGroup.setTransform(transform3D);
-//
-//                Appearance ap = setupAppearance(new Color3f(0.0f, 2.0f, 0.6f));
-//
-//
-//                rootBranchGroup.addChild(transformGroup);
-//            }
-//        }
-
-
     }
 
     private void addNewCube(float xpos, float ypos, float zpos, Color3f color, String className, String method) {
@@ -631,20 +528,10 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         transform.setTranslation(new Vector3f(xpos, ypos, zpos));
         tg.setTransform(transform);
         tg.addChild(b);
-//        tg.addChild(rotation(tg, 3000L));
-//        tg.addChild(rotation(tg, 100L));
-        //cuberoate.addChild(tg);
-
-//        List<List<String>> methodList = classLoopMethodinfo2.values().stream().collect(Collectors.toList());
 
         if (classLoopMethodinfo2.containsKey(className)) {
-            System.out.println("===" + className.toString());
             if (classLoopMethodinfo2.get(className).contains(method) && counter < classLoopMethodinfo2.get(className).size()) {
-                System.out.println("00000" + className + "---" + method);
-                System.out.println("9999999999");
                 counter++;
-//                transform.setRotation(new AxisAngle4f(1.0f, 1.0f, 1.0f, 3.0f));
-//                tg.addChild(rotation(tg, 3000L));
                 BranchGroup tg1 = createSatellite(l, xpos, ypos, zpos);
                 rootBranchGroup.addChild(tg1);
             }
@@ -808,55 +695,11 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 //    private TransformGroup createMethod()
 
     public BranchGroup createSatellite( float radius, float x, float y, float z) {
-//        BranchGroup branchGroup = new BranchGroup();
-//        TransformGroup transformGroup = new TransformGroup();
-//        Transform3D transform3D = new Transform3D();
-//
-//        transformGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-//
-//        transform3D.setTranslation(new Vector3d(0.0, 0.0, -15.0));
-//        transformGroup.setTransform(transform3D);
-//
-//
-//
-//        TransformGroup satellite_body = new TransformGroup();
-//        Transform3D body3D = new Transform3D();
-//
-//        body3D.setTranslation(new Vector3d(0.0, 0.0, 0.0));
-//        satellite_body.setTransform(body3D);
-//
-////
-//        Appearance ap = new Appearance();
-//        Material material = new Material();
-//        material.setDiffuseColor(new Color3f(0.0f, 0.5f, 0.5f));
-//        ap.setMaterial(material);
-//        satellite_body.addChild(new Sphere(1.0f, ap));
-//        satellite_body.addChild(rotation(satellite_body, 1000L));
-//
-//
-//        transformGroup.addChild(satellite_body);
-//
-//
-//        transformGroup.setTransform(transform3D);
-//
-//        DirectionalLight directionalLight = new DirectionalLight(true, new Color3f(-0.5f,0.5f,1.0f), new Vector3f(-0.5f, 0.5f, 0.0f));
-//
-//        directionalLight.setInfluencingBounds(new BoundingSphere(new Point3d(), 10000.0));
-//
-//        branchGroup.addChild(directionalLight);
-//
-//        branchGroup.addChild(transformGroup);
-//
-//        branchGroup.compile();
-//
-//        return branchGroup;
+
         Appearance app = new Appearance();
         Material mat = new Material(randomColor3f(), BLACK, randomColor3f(), WHITE, 128.0f);
         //mat.setShininess(100.0f);
         app.setMaterial(mat);
-        float xrand = randomFloat( radius, -1 * radius, radius);
-        float yrand = randomFloat(radius, -1 * radius, radius);
-        float zrand = randomFloat(radius, -1 * radius, radius);
 
 
         BranchGroup group = new BranchGroup();
@@ -864,7 +707,7 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         Transform3D transform3D = new Transform3D();
 
         transform3D.setTranslation(new Vector3d(x, y, z));
-//        transform3D.setRotation(new AxisAngle4f(0.0f, 0.0f, 0.0f, 0.0f));
+
         transform3D.setScale(1.0);
 
         tg.setTransform(transform3D);
@@ -879,32 +722,9 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
         tg_loop.addChild(rotation(tg_loop, 100L));
 
-//        TransformGroup tg2 = new TransformGroup();
-//        Transform3D tg2_3d = new Transform3D();
-//
-//        tg2_3d.setTranslation(new Vector3d(x+ xrand, y+yrand, z+zrand));
-//        tg2_3d.setRotation(new AxisAngle4f(1.0f, 1.0f, 1.0f, 3.0f));
-//        tg2_3d.setScale(0.1);
-//
-//        tg2.setTransform(tg2_3d);
-//
-//        TransformGroup tg2_loop = new TransformGroup();
-//
-//        Appearance ap_2 = setupAppearance(new Color3f(0.0f, 1.0f, 0.0f));
-//        tg2_loop.addChild(new Sphere(0.5f, ap_2));
-//
-//        tg2_loop.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-
-//        tg2_loop.addChild(rotation(tg2_loop, 3000L));
 
         tg_loop.addChild(setupLight(0.0f, 0.0f, 0.0f, -0.3f, -0.2f, -1.0f));
 
-//        tg2_loop.addChild(setupLight(10.7f, 0.7f, 5.0f, -0.3f, -0.2f, 1.0f));
-
-
-//        tg2.addChild(tg2_loop);
-//
-//        tg_loop.addChild(tg2);
 
         tg.addChild(tg_loop);
 
@@ -955,28 +775,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         return rotationInterpolator;
     }
 
-    public BranchGroup setupPick() {
-        BranchGroup branchGroup = new BranchGroup();
-        pick = new PickCanvas(canvas, branchGroup);
-        TransformGroup transformGroup = new TransformGroup();
-        Transform3D transform3D = new Transform3D();
-
-        transform3D.setTranslation(new Vector3d(0.0, 0.0, 0.0));
-        transform3D.setScale(1.0);
-        transformGroup.setTransform(transform3D);
-
-//        branchGroup.addChild(createShape3D("Hello", 0.0, -0.47, 0.40f, 0.52f));
-
-        branchGroup.compile();
-
-        return branchGroup;
-
-//        transformGroup.addChild(new Text2D());
-//        return null;
-    }
-
-
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -998,26 +796,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
     }
 
-//    @Override
-//    public void mouseClicked(MouseEvent e) {
-//        System.out.println(e.getLocationOnScreen().toString());
-//
-//        pick.setShapeLocation(e);
-//        PickResult result = pick.pickClosest();
-//
-//        if (result != null) {
-//            Shape3D s = (Shape3D) result.getNode(PickResult.SHAPE3D);
-//            Primitive node1 = (Primitive) result.getNode(PickResult.PRIMITIVE);
-//            String shapeID = s.getClass().getName();
-//            String primId = node1.getClass().getName();
-//            System.out.println(shapeID);
-//            System.out.println(primId);
-//        }
-//
-////        Texture2D texture2D = null;
-////        texture2D.setUserData();
-//
-//    }
     @Override
     public void mouseClicked(MouseEvent evt) {
 
@@ -1076,9 +854,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         }
 
         @Override
-//    public void processStimulus(Enumeration enumeration) {
-//
-//    }
 
         public void processStimulus(Enumeration criteria) {
             transform3D.set(new Vector3d(0.0, 0.0, -0.1f));
