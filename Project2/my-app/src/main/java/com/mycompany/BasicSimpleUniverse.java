@@ -18,6 +18,7 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 import javax.media.j3d.*;
 import javax.swing.*;
 import javax.vecmath.*;
+import javax.xml.crypto.dsig.Transform;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
@@ -71,6 +72,7 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
     public HashMap<String, Point3f> classLocMap = new HashMap();
     public HashMap<String, String> classInfoMap = new HashMap<>();
     public HashMap<String, Vector3d> textLocMap = new HashMap<>();
+    public List<TransformGroup> textTransformGroupList = new ArrayList<>();
 
 
     public static final Color3f BLACK = new Color3f(0.0f, 0.0f, 0.0f);
@@ -259,9 +261,12 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         tg.setTransform(t3d);
 
         // create text2D for each classname displayed
-        textLocMap.forEach((className,loc) ->{
-            tg.addChild(createText2D(className, loc));
-        });
+        for (TransformGroup texttg: textTransformGroupList){
+            tg.addChild(texttg);
+        }
+//        textLocMap.forEach((className,loc) ->{
+//            tg.addChild(createText2D(className, loc));
+//        });
 
 
         objRoot.addChild(tg);
@@ -278,11 +283,11 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
         t3d.setTranslation(loc); // set text2d location
         t3d.setRotation(new AxisAngle4f(0.0f, 0.0f, 0.0f, 0.0f));
-        t3d.setScale(1.0);
+        t3d.setScale(10.0);
 
         tg.setTransform(t3d);
 
-        Text2D text2d = new Text2D("       ", new Color3f(0.9f, 1.0f, 1.0f), "Helvetica", 3, Font.ITALIC);
+        Text2D text2d = new Text2D(className, new Color3f(0.9f, 1.0f, 1.0f), "Helvetica", 3, Font.ITALIC);
 
         // text2d.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 
@@ -656,13 +661,15 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
     private void addText(String className, float x, float y, float z) {
         // track each text location,
-        textLocMap.put(className, new Vector3d(x, y + 0.05f, z+0.001f));
+        textLocMap.put(className, new Vector3d(x, y + 0.05f, z));
 
+        TransformGroup objTrans = new TransformGroup();
+        //rootBranchGroup.addChild(objTrans);
         Transform3D t3D = new Transform3D();
         t3D.setTranslation(new Vector3f(x, y + 0.05f, z));
 
         TransformGroup objMove = new TransformGroup(t3D);
-        rootBranchGroup.addChild(objMove);
+        objTrans.addChild(objMove);
 
         TransformGroup objSpin = new TransformGroup();
         objSpin.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
@@ -688,6 +695,9 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         Transform3D trans3d = new Transform3D();
         trans3d.setScale(0.08);
         objSpin.setTransform(trans3d);
+
+        //picking
+        textTransformGroupList.add(objTrans);
 
     }
 
