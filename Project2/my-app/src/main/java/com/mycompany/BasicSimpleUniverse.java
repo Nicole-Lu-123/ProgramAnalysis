@@ -5,15 +5,18 @@ import com.mycompany.app.CombineInfo;
 import com.sun.j3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
+import com.sun.j3d.utils.behaviors.mouse.MouseWheelZoom;
 import com.sun.j3d.utils.geometry.Box;
 import com.sun.j3d.utils.geometry.Primitive;
 import com.sun.j3d.utils.geometry.Sphere;
+import com.sun.j3d.utils.geometry.Text2D;
 import com.sun.j3d.utils.image.TextureLoader;
 import com.sun.j3d.utils.picking.PickCanvas;
 import com.sun.j3d.utils.picking.PickResult;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
 import javax.media.j3d.*;
+import javax.swing.*;
 import javax.vecmath.*;
 import java.applet.Applet;
 import java.awt.*;
@@ -35,6 +38,7 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
     public Canvas3D canvas = null;
     public PickCanvas pick = null;
     private Shape3D quad3D;
+    private String sensorID = null;
 
     public Map<String, List<String>> classmethodinfo;
     public Map<String, List<String>> classextendinfo;
@@ -46,6 +50,7 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
     public Map<String, List<String>> classimpleinfo2;
     public Map<String, List<String>> classdependinfo2;
     public Map<String, List<String>> classLoopMethodinfo2;
+    public Map<String, String> AllClassInfo = new HashMap<>();
     public Map<String, List<String>> class1;
     public Map<String, List<String>> class2;
     public List<String> addClass;
@@ -65,15 +70,13 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
     public HashMap<String, Point3f> classLocMap = new HashMap();
     public HashMap<String, String> classInfoMap = new HashMap<>();
+    public HashMap<String, Vector3d> textLocMap = new HashMap<>();
 
 
     public static final Color3f BLACK = new Color3f(0.0f, 0.0f, 0.0f);
     public static final Color3f WHITE = new Color3f(1.0f, 1.0f, 1.0f);
     private HashMap<String, Point2d> classCoorDinate = new HashMap<>();
 
-//    public static void main(String[] args){
-//        new MainFrame(new BasicSimpleUniverse(cbi1), 700, 700);
-//    }
 
     public BasicSimpleUniverse(CombineInfo cbi1, CombineInfo cbi2, Compare compare, File f1, File f2) throws IOException {
         cb1 = new CombineInfo(f1.getPath());
@@ -102,8 +105,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
         pick.setMode(PickCanvas.BOUNDS);
 
-
-
         canvas.addKeyListener(this);
         canvas.addMouseListener(this);
 
@@ -127,8 +128,9 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         classdependinfo = cbi1.getdependmap();
         classLoopMethodinfo = cbi1.getClassLoopinfo();
         classNum = classmethodinfo.size();
-
-
+        for(String className: classmethodinfo.keySet()){
+            AllClassInfo.put(className, cbi1.getAllClassInfo(className));
+        }
         System.out.println("XXXXXXXXXXXXXNumber of class of 1st commit: " + classLoopMethodinfo);
     }
 
@@ -139,6 +141,9 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         classdependinfo2 = cbi2.getdependmap();
         classLoopMethodinfo2 = cbi2.getClassLoopinfo();
         classNum2 = classmethodinfo2.size();
+        for(String className: classmethodinfo2.keySet()){
+            AllClassInfo.put(className, cbi2.getAllClassInfo(className));
+        }
         System.out.println("YYYYYYYYYYYYNumber of class of 2nd commit: " + classLoopMethodinfo2.get("PhotoeditorEvaluator").size());
     }
 
@@ -195,9 +200,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         rootBranchGroup.addChild(createViewGraph());
 //        rootBranchGroup.addChild(createSatellite());
 
-
-
-
         // set light source
         Color3f lightColor = new Color3f(1.0f, 1.0f, 0.9f);
         Vector3f lightDirection = new Vector3f(4.0f, -7.0f, -12.0f);
@@ -221,8 +223,82 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
             addNewSphere(className, 0.05f, xrandom, yrandom, zrandom);
         }
 
+        // draw lines for the first commit
+        wrapupDrawLine();
 
-        // draw lines
+        // draw new line of second commit
+        addNewLines(addExtend, addImple, addDep);
+
+        System.out.println("2nd Commit added classes relations: ");
+        System.out.println("Class extends:");
+        System.out.println(classextendinfo2);
+        System.out.println("Class implements:");
+        System.out.println(classimpleinfo2);
+        System.out.println("Class function calls:");
+        System.out.println(classdependinfo2);
+
+        // picking
+        rootBranchGroup.addChild(createPicking());
+        //rootBranchGroup.addChild(createText2D_Message());
+
+        rootBranchGroup.compile();
+        return rootBranchGroup;
+    }
+
+    private Node createPicking() {
+        BranchGroup objRoot = new BranchGroup();
+
+        pick = new PickCanvas(canvas, objRoot);
+
+        TransformGroup tg = new TransformGroup();
+        Transform3D t3d = new Transform3D();
+
+        t3d.setTranslation(new Vector3d(0.0, 0.3, 0.0));
+        t3d.setRotation(new AxisAngle4f(0.0f, 0.0f, 0.0f, 0.0f));
+        t3d.setScale(1.0);
+        tg.setTransform(t3d);
+
+        // create text2D for each classname displayed
+        textLocMap.forEach((className,loc) ->{
+            tg.addChild(createText2D(className, loc));
+        });
+
+
+        objRoot.addChild(tg);
+        objRoot.compile();
+        return objRoot;
+
+    }
+
+    public BranchGroup createText2D(String className, Vector3d loc) {
+
+        BranchGroup objRoot = new BranchGroup();
+        TransformGroup tg = new TransformGroup();
+        Transform3D t3d = new Transform3D();
+
+        t3d.setTranslation(loc); // set text2d location
+        t3d.setRotation(new AxisAngle4f(0.0f, 0.0f, 0.0f, 0.0f));
+        t3d.setScale(1.0);
+
+        tg.setTransform(t3d);
+
+        Text2D text2d = new Text2D("       ", new Color3f(0.9f, 1.0f, 1.0f), "Helvetica", 3, Font.ITALIC);
+
+        // text2d.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
+        text2d.setUserData(className); //!!!
+
+        tg.addChild(text2d);
+
+        objRoot.addChild(tg);
+
+        objRoot.compile();
+
+        return objRoot;
+
+    }
+
+    public void wrapupDrawLine() {
         if (!classextendinfo.isEmpty()) {
             classextendinfo.forEach((className, classList) -> {
                 System.out.println("Class: " + className + "extends " + classList);
@@ -247,9 +323,9 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
                 }
             });
         }
+    }
 
-
-        // newly added relation of classes
+    public void addNewLines(Map<String, List<String>> addExtend, Map<String, List<String>> addImple, Map<String, List<String>> addDep) {
         addExtend.forEach((className, classList) -> {
             for (String s : classList) {
                 drawNewLine(className, s, new Color3f(Color.green));
@@ -265,20 +341,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
                 drawNewLine(className, s, new Color3f(Color.blue));
             }
         });
-
-        System.out.println("2nd Commit added classes relations: ");
-        System.out.println("Class extends:");
-        System.out.println(classextendinfo2);
-        System.out.println("Class implements:");
-        System.out.println(classimpleinfo2);
-        System.out.println("Class function calls:");
-        System.out.println(classdependinfo2);
-
-
-        System.out.println();
-
-        rootBranchGroup.compile();
-        return rootBranchGroup;
     }
 
     public BranchGroup createViewGraph() {
@@ -298,8 +360,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
         viewgroup.compile();
         return viewgroup;
-
-
 
 
 //        Integer viewNumber = 4;
@@ -335,7 +395,7 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         // set location of sphere at (x,y,z) in the scene
         transform.setTranslation(new Vector3f(x, y, z));
         tg.setTransform(transform);
-//        tg.addChild(sphere);
+        tg.addChild(sphere);
         rootBranchGroup.addChild(tg);
 //        classBranchGroup.addChild(tg);
         allowMouseRotateTranslate(tg);
@@ -352,22 +412,10 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         System.out.println("CCCC22222" + classInfoMap.toString());
 
 //        classInfoMap.put(className, )
-
-
         System.out.println("CCCCCCC" + classLocMap.toString());
-        TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
-        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
-        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
 
-        app.setTransparencyAttributes(transparency);
-        app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
-        app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
-
-        Alpha alpha1 = new Alpha(5, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
-                0, 0, 2000, 0, 0, 2000, 0, 0);
-        TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
-        transparency1.setSchedulingBounds(bound);
-        tg.addChild(transparency1);
+        // sphere blinks several times
+        setTransparency(app,tg,5);
 
         // add methods of the corresponding class
         Color3f randomcolor = randomColor3f();
@@ -422,19 +470,7 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
             tg.addChild(shapeLine);
 
             // blinks several times
-            TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
-            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
-            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
-
-            app.setTransparencyAttributes(transparency);
-            app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
-            app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
-
-            Alpha alpha1 = new Alpha(6, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
-                    0, 0, 2000, 0, 0, 2000, 0, 0);
-            TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
-            transparency1.setSchedulingBounds(bound);
-            tg.addChild(transparency1);
+            setTransparency(app,tg,6);
 
         }
     }
@@ -443,19 +479,8 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
     private void deleteRelation(String className, String otherClass, TransformGroup tg, Appearance app,
                                 Map<String, List<String>> relation) {
         if (relation.containsKey(className) && relation.get(className).contains(otherClass)) {
-            TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
-            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
-            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
-
-            app.setTransparencyAttributes(transparency);
-            app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
-            app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
-
-            Alpha alpha1 = new Alpha(-1, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
-                    0, 0, 2000, 0, 0, 2000, 0, 0);
-            TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
-            transparency1.setSchedulingBounds(bound);
-            tg.addChild(transparency1);
+            // if the relation needs to be deleted, then make the line keep blinking
+            setTransparency(app,tg,-1);
         }
     }
 
@@ -532,20 +557,7 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
         // if the class is deleted at next commit, then sphere will keep blinking
         if (deleteClass.contains(className)) {
-            TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
-            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
-            transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
-
-            app.setTransparencyAttributes(transparency);
-            app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
-            app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
-
-            Alpha alpha1 = new Alpha(-1, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
-                    0, 0, 1000, 0, 0, 1000, 0, 0);
-            TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
-            transparency1.setSchedulingBounds(bound);
-            tg.addChild(transparency1);
-
+            setTransparency(app,tg,-1);
         }
 
         // for each method in this class, create a cube
@@ -630,29 +642,11 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 //                tg.addChild(rotation(tg, 3000L));
                 BranchGroup tg1 = createSatellite(l, xpos, ypos, zpos);
                 rootBranchGroup.addChild(tg1);
-
-
-
             }
         }
 
-
-
         // the newly added method will blink several times
-        TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
-        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
-        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
-
-        app.setTransparencyAttributes(transparency);
-        app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
-        app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
-
-        Alpha alpha1 = new Alpha(5, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
-                0, 0, 2000, 0, 0, 2000, 0, 0);
-        TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
-        transparency1.setSchedulingBounds(bound);
-        tg.addChild(transparency1);
-
+        setTransparency(app,tg,5);
 
         rootBranchGroup.addChild(tg);
         allowMouseRotateTranslate(tg);
@@ -661,6 +655,9 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
     }
 
     private void addText(String className, float x, float y, float z) {
+        // track each text location,
+        textLocMap.put(className, new Vector3d(x, y + 0.05f, z+0.001f));
+
         Transform3D t3D = new Transform3D();
         t3D.setTranslation(new Vector3f(x, y + 0.05f, z));
 
@@ -683,6 +680,7 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         Text3D textGeom = new Text3D(font3D, new String(className));
         textGeom.setAlignment(Text3D.ALIGN_CENTER);
         Shape3D textShape = new Shape3D();
+        textShape.setUserData(className); // picking id
         textShape.setGeometry(textGeom);
         textShape.setAppearance(textAppear);
         objSpin.addChild(textShape);
@@ -725,19 +723,7 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         // if the method is deleted in next commit, then the cube will keep blinking
         if (deleteMethod.containsKey(className)) {
             if (deleteMethod.get(className).contains(method)) {
-                TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
-                transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
-                transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
-
-                app.setTransparencyAttributes(transparency);
-                app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
-                app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
-
-                Alpha alpha1 = new Alpha(-1, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
-                        0, 0, 1000, 0, 0, 1000, 0, 0);
-                TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
-                transparency1.setSchedulingBounds(bound);
-                tg.addChild(transparency1);
+                setTransparency(app, tg, -1);
             }
         }
 
@@ -750,8 +736,22 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
         rootBranchGroup.addChild(tg);
         allowMouseRotateTranslate(tg);
 
-        // if the method has for-loop in the body, then the rotation self rotates
-        //objRotate(tg);
+    }
+
+    private void setTransparency(Appearance app, TransformGroup tg, int loopcount) {
+        TransparencyAttributes transparency = new TransparencyAttributes(1, 1.0f);
+        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_READ);
+        transparency.setCapability(TransparencyAttributes.ALLOW_VALUE_WRITE);
+
+        app.setTransparencyAttributes(transparency);
+        app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_READ);
+        app.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
+
+        Alpha alpha1 = new Alpha(loopcount, Alpha.INCREASING_ENABLE | Alpha.DECREASING_ENABLE,
+                0, 0, 1000, 0, 0, 1000, 0, 0);
+        TransparencyInterpolator transparency1 = new TransparencyInterpolator(alpha1, transparency, 0.0f, 1.0f);
+        transparency1.setSchedulingBounds(bound);
+        tg.addChild(transparency1);
     }
 
     // randomly pick a brighter color
@@ -961,13 +961,6 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
         return branchGroup;
 
-
-
-
-
-
-
-
 //        transformGroup.addChild(new Text2D());
 //        return null;
     }
@@ -995,24 +988,44 @@ public class BasicSimpleUniverse extends Applet implements MouseListener, Action
 
     }
 
+//    @Override
+//    public void mouseClicked(MouseEvent e) {
+//        System.out.println(e.getLocationOnScreen().toString());
+//
+//        pick.setShapeLocation(e);
+//        PickResult result = pick.pickClosest();
+//
+//        if (result != null) {
+//            Shape3D s = (Shape3D) result.getNode(PickResult.SHAPE3D);
+//            Primitive node1 = (Primitive) result.getNode(PickResult.PRIMITIVE);
+//            String shapeID = s.getClass().getName();
+//            String primId = node1.getClass().getName();
+//            System.out.println(shapeID);
+//            System.out.println(primId);
+//        }
+//
+////        Texture2D texture2D = null;
+////        texture2D.setUserData();
+//
+//    }
     @Override
-    public void mouseClicked(MouseEvent e) {
-        System.out.println(e.getLocationOnScreen().toString());
+    public void mouseClicked(MouseEvent evt) {
 
-        pick.setShapeLocation(e);
+        pick.setShapeLocation(evt.getX(), evt.getY());
         PickResult result = pick.pickClosest();
 
         if (result != null) {
-            Shape3D s = (Shape3D) result.getNode(PickResult.SHAPE3D);
-            Primitive node1 = (Primitive) result.getNode(PickResult.PRIMITIVE);
-            String shapeID = s.getClass().getName();
-            String primId = node1.getClass().getName();
-            System.out.println(shapeID);
-            System.out.println(primId);
+            Node node = result.getNode(PickResult.SHAPE3D);
+            sensorID = (node.getUserData()).toString();
+            JOptionPane.showMessageDialog(null,
+                    AllClassInfo.get(sensorID),sensorID, JOptionPane.INFORMATION_MESSAGE);
+
+
+        } else {
+            System.out.println("nothing picking!");
         }
 
-//        Texture2D texture2D = null;
-//        texture2D.setUserData();
+        sensorID = null;
 
     }
 
